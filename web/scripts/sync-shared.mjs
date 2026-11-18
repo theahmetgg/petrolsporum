@@ -44,15 +44,19 @@ for (const file of FILES) {
 }
 
 // Görseller: kulüp arması, logolar, haber ve tarihçe fotoğrafları
-const { readdirSync } = await import("node:fs");
+const { readdirSync, unlinkSync } = await import("node:fs");
 const clubDir = join(mobile, "assets", "club");
 mkdirSync(join(web, "public", "club"), { recursive: true });
 for (const name of readdirSync(clubDir)) copyFileSync(join(clubDir, name), join(web, "public", "club", name));
 
-// Mağaza ürün fotoğrafları: 900 px kopyalar (web küçük boyutları kendisi üretir: next/image)
+// Mağaza ürün fotoğrafları: arka planı silinmiş 900 px WebP kopyalar (web küçük boyutları kendisi üretir: next/image).
+// Kaynakta olmayan eski dosyalar hedeften silinir.
 const storeDir = join(mobile, "assets", "store");
-mkdirSync(join(web, "public", "store"), { recursive: true });
-for (const name of readdirSync(storeDir)) if (name.endsWith(".jpg")) copyFileSync(join(storeDir, name), join(web, "public", "store", name));
+const storeOut = join(web, "public", "store");
+mkdirSync(storeOut, { recursive: true });
+const storeFiles = readdirSync(storeDir).filter((name) => name.endsWith(".webp"));
+for (const name of readdirSync(storeOut)) if (!storeFiles.includes(name)) unlinkSync(join(storeOut, name));
+for (const name of storeFiles) copyFileSync(join(storeDir, name), join(storeOut, name));
 
 // Tema: iki palet de üretilir. Renkler CSS değişkenidir (--c-*); Tailwind sınıfları (bg-surface-bg, text-ink …)
 // bu değişkenleri okur. Varsayılan koyu temadır; `data-theme="light"` açık paleti verir. Bir bölüme

@@ -30,3 +30,11 @@ export const FEATURED_PRODUCT_ID = "p1";
 
 /** Bir sayfada yüklenen ürün sayısı (mobilde kaydırdıkça, web'de "Daha fazla göster" ile sonraki sayfa gelir) */
 export const STORE_PAGE_SIZE = 12;
+
+/** Kategori kutularının vitrin görseli (ürün kimliği): kategoriyi en iyi anlatan ürün */
+export const CATEGORY_COVERS: Partial<Record<ProductCategory, string>> = {
+  Forma: "p3",
+  Giyim: "p54",
+  Çocuk: "p7",
+  Aksesuar: "p33",
+};

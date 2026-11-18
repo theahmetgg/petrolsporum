@@ -38,4 +38,7 @@ export const useProductPages = (filter: ProductFilter) =>
     ...STATIC,
   });
 export const useProduct = (id: string) => useQuery({ queryKey: ["products", id], queryFn: () => storeService.product(id), enabled: !!id, ...STATIC });
+export const useDeals = () => useQuery({ queryKey: ["products", "deals"], queryFn: () => storeService.deals(), ...STATIC });
+export const useRelatedProducts = (id: string) => useQuery({ queryKey: ["products", "related", id], queryFn: () => storeService.related(id), enabled: !!id, ...STATIC });
+export const useStoreCategories = () => useQuery({ queryKey: ["products", "categories"], queryFn: storeService.categories, ...STATIC });
 export const useFeaturedProducts = () => useQuery({ queryKey: ["products", "featured"], queryFn: storeService.featured, ...STATIC });

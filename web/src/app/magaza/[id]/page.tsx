@@ -3,8 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductBadge, ProductCard, ProductOrder, ProductPrice } from "~/components/store";
+import { STAGE, productImage } from "~/components/storeShared";
 import { Container, SectionTitle } from "~/components/site";
 import { PRODUCTS } from "@/mocks/store";
+import { discountPercent, formatPrice } from "@/utils/format";
 
 /** Ürün sayfaları derleme sırasında üretilir (veri sabit) */
 export function generateStaticParams() {
@@ -17,42 +19,61 @@ export async function generateMetadata({ params }: PageProps<"/magaza/[id]">): P
   return product ? { title: product.name, description: `${product.name} · Batman Petrolspor resmi mağazası.` } : {};
 }
 
-/** Ürün sayfası: büyük fotoğraf, ad, fiyat, seçenekler ve "Sipariş ver"; altında aynı kategoriden ürünler. */
+/**
+ * Ürün sayfası: solda sahne zemininde büyük şeffaf ürün fotoğrafı, sağda kategori, ad, fiyat (indirimde kazançla),
+ * seçenekler ve "Sipariş ver"; altında aynı kategoriden ürünler. Geniş ekranda bilgi sütunu kaydırırken yerinde kalır.
+ */
 export default async function ProductPage({ params }: PageProps<"/magaza/[id]">) {
   const { id } = await params;
   const product = PRODUCTS.find((p) => p.id === id);
   if (!product) notFound();
   const related = PRODUCTS.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const onSale = product.old_price != null;
 
   return (
     <Container className="mt-8">
-      <Link href="/magaza" className="text-sm font-medium text-ink-secondary hover:text-ink">
-        ← Mağaza
-      </Link>
+      <nav aria-label="Sayfa yolu" className="text-sm text-ink-secondary">
+        <Link href="/magaza" className="font-medium hover:text-ink">
+          Mağaza
+        </Link>
+        <span className="mx-2 text-ink-muted">/</span>
+        <span>{product.category}</span>
+      </nav>
 
-      <div className="mt-6 grid gap-8 md:grid-cols-2 md:gap-12">
-        <div className="relative aspect-square overflow-hidden rounded-hero bg-white">
-          <Image src={`/store/${product.image}.jpg`} alt={product.name} fill priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
-          <div className="absolute left-4 top-4">
+      <div className="mt-6 grid gap-8 md:grid-cols-[1.1fr_1fr] md:gap-14">
+        <div className={`relative aspect-square overflow-hidden rounded-hero ${STAGE}`}>
+          <Image src={productImage(product.image)} alt={product.name} fill priority sizes="(min-width: 768px) 55vw, 100vw" className="object-contain p-6 drop-shadow-2xl md:p-10" />
+          <div className="absolute left-5 top-5">
             <ProductBadge product={product} />
           </div>
         </div>
 
-        <div className="md:py-4">
-          <p className="text-xs font-medium text-brand-strong">{product.category}</p>
-          <h1 className="heading mt-2 text-5xl md:text-6xl">{product.name}</h1>
-          <div className="mt-4">
+        <div className="md:sticky md:top-28 md:self-start md:py-4">
+          <p className="text-xs font-medium tracking-wide text-brand-strong">{product.category.toLocaleUpperCase("tr-TR")}</p>
+          <h1 className="heading mt-2 text-5xl md:text-7xl">{product.name}</h1>
+          <div className="mt-5">
             <ProductPrice product={product} large />
+            {onSale ? (
+              <p className="mt-1 text-sm font-medium text-success">
+                %{discountPercent(product.old_price!, product.price)} indirim · {formatPrice(product.old_price! - product.price)} kazanç
+              </p>
+            ) : null}
           </div>
           <div className="mt-8">
             <ProductOrder product={product} />
           </div>
-          {product.note ? (
-            <div className="mt-8 rounded-box bg-mono-fill p-5">
-              <p className="text-sm font-medium">Bilgi</p>
-              <p className="mt-1 text-sm text-ink-secondary">{product.note}</p>
+          <dl className="mt-8 divide-y divide-mono-line rounded-box bg-mono-fill px-5 text-sm">
+            <div className="flex justify-between gap-4 py-4">
+              <dt className="text-ink-secondary">Mağaza</dt>
+              <dd className="font-medium">Batman Petrolspor resmi mağazası</dd>
             </div>
-          ) : null}
+            {product.note ? (
+              <div className="py-4">
+                <dt className="text-ink-secondary">Bilgi</dt>
+                <dd className="mt-1">{product.note}</dd>
+              </div>
+            ) : null}
+          </dl>
         </div>
       </div>
 

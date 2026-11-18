@@ -51,6 +51,44 @@ body {
   background: var(--gradient-signature);
 }
 
+/* Ürün zemini ("sahne", vitrin spotu): şeffaf ürün fotoğrafı bunun üstünde durur. Katmanlar (üstten alta):
+   kenar kararması → üstten soluk cam parlaması → ürünün arkasında sıkı Petrolspor kızılı ışık → çok koyu zemin;
+   ayrıca ince çerçeve çizgisi. Siyah ürünler koyu temada ışığın önünde ayrılır. Açık temada zemin inci beyazıdır,
+   kızıl yalnız hafif bir tondur. Değerler mobildeki `ProductStage` (STAGE) ile aynıdır; biri değişirse öbürü de
+   değişmeli. */
+.stage,
+[data-theme="light"] [data-theme="dark"] .stage {
+  --stage-top: #1d1d21;
+  --stage-bottom: #09090b;
+  --stage-glow: #d41507;
+  --stage-peak: 50%;
+  --stage-sheen: 8%;
+  --stage-vignette: 45%;
+  --stage-border: rgb(255 255 255 / 0.09);
+}
+[data-theme="light"] .stage {
+  --stage-top: #ffffff;
+  --stage-bottom: #e7e7eb;
+  --stage-glow: #de1606;
+  --stage-peak: 10%;
+  --stage-sheen: 0%;
+  --stage-vignette: 5%;
+  --stage-border: rgb(15 23 42 / 0.06);
+}
+.stage {
+  background:
+    radial-gradient(ellipse 74% 74% at 50% 50%, transparent 55%, rgb(0 0 0 / var(--stage-vignette)) 100%),
+    radial-gradient(ellipse 70% 70% at 50% -8%, rgb(255 255 255 / var(--stage-sheen)) 0%, transparent 100%),
+    radial-gradient(
+      ellipse 46% 46% at 50% 50%,
+      color-mix(in srgb, var(--stage-glow) var(--stage-peak), transparent) 0%,
+      color-mix(in srgb, var(--stage-glow) calc(var(--stage-peak) * 0.5), transparent) 45%,
+      transparent 100%
+    ),
+    linear-gradient(to bottom, var(--stage-top), var(--stage-bottom));
+  box-shadow: inset 0 0 0 1px var(--stage-border);
+}
+
 /* Fotoğraf üstündeki karartma: altta sayfa zeminine karışır */
 .scrim-bottom {
   background: linear-gradient(180deg, rgb(12 6 6 / 0.35) 0%, rgb(12 6 6 / 0.15) 30%, rgb(12 6 6 / 0.8) 68%, var(--c-surface-bg) 100%);

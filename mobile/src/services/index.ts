@@ -1,4 +1,4 @@
-import type { CockpitStats, FanPost, LeaderboardRow, Match, MemoryTicket, MonumentBrick, NewsItem, Page, Player, Product, StandingRow, Wallpaper } from "@/types";
+import type { CockpitStats, FanPost, LeaderboardRow, Match, MemoryTicket, MonumentBrick, NewsItem, Page, Player, Product, ProductCategory, StandingRow, Wallpaper } from "@/types";
 import { MATCHES } from "@/mocks/matches";
 import { STANDINGS } from "@/mocks/standings";
 import { PLAYERS } from "@/mocks/players";
@@ -6,7 +6,7 @@ import { NEWS } from "@/mocks/news";
 import { WALLPAPERS } from "@/mocks/wallpapers";
 import { FAN_POSTS, LEADERBOARDS, MEMORY_TICKETS, SOLD_BRICKS } from "@/mocks/fans";
 import { COCKPIT } from "@/mocks/cockpit";
-import { PRODUCTS, STORE_PAGE_SIZE, matchesFilter, type ProductFilter } from "@/mocks/store";
+import { CATEGORY_COVERS, PRODUCTS, STORE_PAGE_SIZE, matchesFilter, type ProductFilter } from "@/mocks/store";
 
 /**
  * SERVİS KATMANI. Ekranlar veriyi yalnız buradan (ve `@/hooks/queries` içindeki sorgulardan) okur; `@/mocks`
@@ -59,4 +59,24 @@ export const storeService = {
   product: (id: string): Promise<Product | null> => reply(PRODUCTS.find((p) => p.id === id) ?? null),
   /** Ana sayfa rafı: yeni sezon ürünleri */
   featured: (): Promise<Product[]> => reply(PRODUCTS.filter((p) => p.is_new)),
+  /** Fırsatlar rafı: indirimli ürünler, indirim oranı yüksek olan önce */
+  deals: (limit = 10): Promise<Product[]> =>
+    reply(
+      PRODUCTS.filter((p) => p.old_price != null)
+        .sort((a, b) => (b.old_price! - b.price) / b.old_price! - (a.old_price! - a.price) / a.old_price!)
+        .slice(0, limit)
+    ),
+  /** Ürün sayfası rafı: aynı kategoriden başka ürünler */
+  related: (id: string, limit = 8): Promise<Product[]> => {
+    const product = PRODUCTS.find((p) => p.id === id);
+    return reply(product ? PRODUCTS.filter((p) => p.category === product.category && p.id !== id).slice(0, limit) : []);
+  },
+  /** Kategori kutuları: her kategorinin ürün sayısı ve vitrin görseli (ilk ürünü) */
+  categories: (): Promise<{ category: ProductCategory; count: number; image: string }[]> =>
+    reply(
+      (["Forma", "Giyim", "Çocuk", "Aksesuar"] as ProductCategory[]).map((category) => {
+        const list = PRODUCTS.filter((p) => p.category === category);
+        return { category, count: list.length, image: CATEGORY_COVERS[category] ?? list[0].image };
+      })
+    ),
 };
