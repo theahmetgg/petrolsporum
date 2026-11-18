@@ -12,7 +12,6 @@ import type { ColorIconName } from "@/constants/colorIcons.generated";
 import { useLeaderboard } from "@/hooks/queries";
 import { useNavigationMode } from "@/hooks/useNavigationMode";
 import { withMyPoints } from "@/lib/leaderboard";
-import { CLUB } from "@/mocks/club";
 import { IMAGES } from "@/mocks/images";
 import { LIVE_MATCH_ID } from "@/mocks/live";
 import { confirm } from "@/stores/confirmStore";
@@ -73,7 +72,7 @@ const SECTIONS: { title: string; items: DrawerItem[] }[] = [
       { label: "Haberler", icon: "news", href: "/news" },
       { label: "Tarihçe", icon: "history", href: "/history" },
       { label: "Bildirimler", icon: "notification", href: "/notifications" },
-      { label: "Mağaza", icon: "store", url: CLUB.store_url },
+      { label: "Mağaza", icon: "store", href: "/store" },
       { label: "Başkan Kokpiti", icon: "cockpit", href: "/cockpit" },
     ],
   },

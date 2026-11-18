@@ -5,6 +5,8 @@ import { NextMatchCard, ResultChip, StandingsTable } from "~/components/match";
 import { Container, SectionTitle } from "~/components/site";
 import { rankStandings } from "@/lib/standings";
 import { CLUB } from "@/mocks/club";
+import { PRODUCTS } from "@/mocks/store";
+import { ProductCard } from "~/components/store";
 import { MATCHES } from "@/mocks/matches";
 import { NEWS } from "@/mocks/news";
 import { STANDINGS } from "@/mocks/standings";
@@ -106,6 +108,19 @@ export default function HomePage() {
             ))}
           </dl>
         </div>
+      </Container>
+
+      <Container className="mt-16">
+        <SectionTitle title="Mağaza" href="/magaza" linkLabel="Tüm ürünler" />
+        <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4">
+          {PRODUCTS.filter((p) => p.is_new)
+            .slice(0, 4)
+            .map((product) => (
+              <li key={product.id}>
+                <ProductCard product={product} />
+              </li>
+            ))}
+        </ul>
       </Container>
 
       {/* Uygulama tanıtımı */}

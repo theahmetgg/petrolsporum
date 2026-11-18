@@ -11,8 +11,8 @@ export const PRODUCTS: Product[] = PRODUCT_DATA;
 
 /**
  * Sipariş henüz alınmıyor (karar, 19 Kasım 2026): mağaza vitrin olarak yayındadır; sepet ve ödeme yoktur.
- * Ürün sayfasında "Sipariş yakında" yazar ve "Açılınca haber ver" seçilebilir. Sipariş açılınca bu değer true olur
- * ve sepet / ödeme akışı eklenir (ödeme altyapısı Ar-Ge belgesi Faz 3).
+ * Ürün sayfasında "Sipariş ver" butonu durur ama basınca bilerek hiçbir şey yapmaz (kullanıcı kararı). Sipariş
+ * açılınca bu değer true olur ve sepet / ödeme akışı butona bağlanır (ödeme altyapısı Ar-Ge belgesi Faz 3).
  */
 export const STORE_ORDERING_OPEN = false;
 

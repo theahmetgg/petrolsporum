@@ -12,7 +12,8 @@ import { NewsCarousel } from "@/components/home/NewsCarousel";
 import { NewsRow } from "@/components/home/NewsRow";
 import { ShortcutGrid, type Shortcut } from "@/components/home/ShortcutGrid";
 import { FanPostCard } from "@/components/fan/FanPostCard";
-import { useFanPosts, useMatches, useNews } from "@/hooks/queries";
+import { ProductCard } from "@/components/store/ProductCard";
+import { useFanPosts, useFeaturedProducts, useMatches, useNews } from "@/hooks/queries";
 import { IMAGES } from "@/mocks/images";
 import { useLiveMatch } from "@/stores/liveMatchStore";
 import { useSessionStore } from "@/stores/sessionStore";
@@ -22,6 +23,8 @@ import { spacing, useTheme } from "@/theme";
 const HEADLINE_COUNT = 3;
 const LIST_COUNT = 3;
 const WALL_PREVIEW_COUNT = 2;
+/** Ana sayfadaki mağaza rafında ürün kartının eni */
+const STORE_RAIL_CARD = 150;
 
 /**
  * Ana Sayfa (prototip ekran 2). Sıra Ar-Ge belgesi 8.1'deki 4. referanstan: selamlama, sıradaki maç,
@@ -35,6 +38,7 @@ export default function HomeTab() {
   const { data: matches } = useMatches();
   const { data: news } = useNews();
   const { data: posts } = useFanPosts();
+  const { data: featured } = useFeaturedProducts();
 
   // Sıradaki maç: oynanmamış ilk maç
   const nextMatch = matches?.find((m) => m.status === "scheduled");
@@ -49,7 +53,7 @@ export default function HomeTab() {
       { key: "monument", label: "Anıt Duvarı", icon: "monument", onPress: () => router.push("/monument") },
       { key: "tribune", label: "Tribün Modu", icon: "tribune", onPress: () => router.push("/tribune") },
       { key: "standings", label: "Puan Durumu", icon: "standings", onPress: () => router.push({ pathname: "/(tabs)/matches", params: { view: "standings" } }) },
-      { key: "fancard", label: "Taraftar Kartı", icon: "fancard", onPress: () => router.push("/(tabs)/profile") },
+      { key: "store", label: "Mağaza", icon: "store", onPress: () => router.push("/store") },
       { key: "leaderboard", label: "Liderlik", icon: "leaderboard", onPress: () => router.push("/play/leaderboard") },
     ],
     []
@@ -104,6 +108,16 @@ export default function HomeTab() {
 
         <View style={{ marginTop: spacing.section }}>
           <ShortcutGrid items={shortcuts} />
+        </View>
+
+        {/* Mağaza rafı: yeni sezon formaları */}
+        <View style={{ marginTop: spacing.section }}>
+          <SectionHeader title="Mağaza" subtitle="Yeni sezon formaları" onAction={() => router.push("/store")} />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.screen, gap: 12 }}>
+            {(featured ?? []).map((product) => (
+              <ProductCard key={product.id} product={product} width={STORE_RAIL_CARD} onPress={(p) => router.push(`/store/${p.id}`)} />
+            ))}
+          </ScrollView>
         </View>
 
         <View style={{ paddingHorizontal: spacing.screen, marginTop: spacing.section }}>

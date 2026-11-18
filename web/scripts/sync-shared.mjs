@@ -28,6 +28,8 @@ const FILES = [
   "mocks/matches.ts",
   "mocks/news.ts",
   "mocks/club.ts",
+  "mocks/store.ts",
+  "mocks/store.data.ts",
   "utils/format.ts",
   "lib/standings.ts",
 ];
@@ -46,6 +48,11 @@ const { readdirSync } = await import("node:fs");
 const clubDir = join(mobile, "assets", "club");
 mkdirSync(join(web, "public", "club"), { recursive: true });
 for (const name of readdirSync(clubDir)) copyFileSync(join(clubDir, name), join(web, "public", "club", name));
+
+// Mağaza ürün fotoğrafları: 900 px kopyalar (web küçük boyutları kendisi üretir: next/image)
+const storeDir = join(mobile, "assets", "store");
+mkdirSync(join(web, "public", "store"), { recursive: true });
+for (const name of readdirSync(storeDir)) if (name.endsWith(".jpg")) copyFileSync(join(storeDir, name), join(web, "public", "store", name));
 
 // Tema: iki palet de üretilir. Renkler CSS değişkenidir (--c-*); Tailwind sınıfları (bg-surface-bg, text-ink …)
 // bu değişkenleri okur. Varsayılan koyu temadır; `data-theme="light"` açık paleti verir. Bir bölüme

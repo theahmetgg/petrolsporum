@@ -139,6 +139,33 @@ export interface Wallpaper {
   download_count: number;
 }
 
+/* ───────────── Mağaza ───────────── */
+
+export type ProductCategory = "Forma" | "Çocuk" | "Giyim" | "Aksesuar";
+
+export interface Product {
+  id: string;
+  name: string;
+  category: ProductCategory;
+  /** Satış fiyatı (TL). Ölçüye göre değişen üründe en düşük fiyat */
+  price: number;
+  /** İndirimden önceki fiyat (üstü çizili gösterilir) */
+  old_price?: number;
+  /** Ölçüye göre değişen üründe en yüksek fiyat */
+  price_max?: number;
+  /** Seçeneğin adı: "Beden", "Yaş", "Ölçü (cm)" */
+  option_label?: string;
+  /** Beden / yaş / ölçü seçenekleri; yoksa boş dizi (tek seçenek) */
+  options: string[];
+  /** Ürün notu (kalıp, kumaş) */
+  note?: string;
+  /** Görsel anahtarı: mobilde gömülü dosya, web'de /store/<anahtar>.jpg */
+  image: string;
+  is_new?: boolean;
+  /** Ürünün kulüp sitesindeki sayfası */
+  source_url: string;
+}
+
 /* ───────────── Taraftar ───────────── */
 
 export interface FanProfile {

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { PageHero } from "~/components/cards";
 import { Container, SectionTitle } from "~/components/site";
 import { CLUB, HISTORY, HISTORY_PHOTOS } from "@/mocks/club";
@@ -79,9 +80,9 @@ export default function ClubPage() {
               <div>
                 <dt className="text-xs text-ink-muted">Mağaza</dt>
                 <dd className="mt-1">
-                  <a href={CLUB.store_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-brand-strong">
-                    petrolspor.com/magaza ↗
-                  </a>
+                  <Link href="/magaza" className="underline hover:text-brand-strong">
+                    Mağazaya git
+                  </Link>
                 </dd>
               </div>
             </dl>

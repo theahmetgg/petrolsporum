@@ -94,3 +94,13 @@ export const formatCompactTL = (n: number) => {
   if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(".", ",").replace(",0", "")} B TL`;
   return formatTL(n);
 };
+
+/** Ürün fiyatı: 3500 → "3.500 TL", 1799.9 → "1.799,90 TL" (kuruş yalnız varsa yazılır) */
+export const formatPrice = (n: number) => {
+  const whole = Math.floor(n);
+  const cents = Math.round((n - whole) * 100);
+  return cents ? `${formatNumber(whole)},${pad2(cents)} TL` : `${formatNumber(whole)} TL`;
+};
+
+/** İndirim oranı (tam sayı yüzde): 1799 → 1500 için 17 */
+export const discountPercent = (oldPrice: number, price: number) => Math.round(((oldPrice - price) / oldPrice) * 100);

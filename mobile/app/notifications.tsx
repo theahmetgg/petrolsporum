@@ -24,7 +24,7 @@ const NOTIFICATIONS: DemoNotification[] = [
   { id: "n2", icon: "prediction", title: "Tahminini yap", text: "Muğlaspor maçı için skor tahmini açık. Düdük çalınca kilitlenir.", when: "Bugün", href: "/play/prediction" },
   { id: "n3", icon: "whistle", title: "Maç sonucu", text: "Mardin 1969 Spor 1 – 1 Batman Petrolspor. Gol: Biron.", when: "8 Kasım", href: "/match/2026-27-h14" },
   { id: "n4", icon: "wallpaper", title: "Yeni duvar kağıdı", text: "Maç günü afişi galeriye eklendi.", when: "7 Kasım", href: "/(tabs)/gallery" },
-  { id: "n5", icon: "store", title: "Mağaza", text: "2026-2027 sezon formaları satışta.", when: "1 Kasım" },
+  { id: "n5", icon: "store", title: "Mağaza", text: "2026-2027 sezon formaları mağazada.", when: "1 Kasım", href: "/store" },
 ];
 
 export default function NotificationsScreen() {

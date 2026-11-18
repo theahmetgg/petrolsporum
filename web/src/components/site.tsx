@@ -7,6 +7,7 @@ const NAV = [
   { href: "/maclar", label: "Maçlar" },
   { href: "/kadro", label: "Kadro" },
   { href: "/haberler", label: "Haberler" },
+  { href: "/magaza", label: "Mağaza" },
   { href: "/kulup", label: "Kulüp" },
   { href: "/uygulama", label: "Uygulama" },
 ] as const;
@@ -54,9 +55,9 @@ export function SiteHeader() {
         </nav>
         <div className="flex shrink-0 items-center gap-2">
           <ThemeToggle />
-          <a href={CLUB.store_url} target="_blank" rel="noopener noreferrer" className="rounded-full bg-mono-solid px-5 py-2.5 text-sm font-semibold text-mono-onSolid hover:opacity-90">
+          <Link href="/magaza" className="rounded-full bg-mono-solid px-5 py-2.5 text-sm font-semibold text-mono-onSolid hover:opacity-90">
             Mağaza
-          </a>
+          </Link>
         </div>
       </Container>
       <nav aria-label="Ana menü" className="flex gap-1 overflow-x-auto px-3 pb-2 md:hidden">
