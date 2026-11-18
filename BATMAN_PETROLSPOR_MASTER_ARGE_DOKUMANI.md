@@ -562,12 +562,26 @@ petrolspor/
 | 10 | **Başkan Kokpiti** (demo) | Taraftar sayısı, şehir dağılımı, satış ve bildirim gönderme ekranı sahte veriyle görünüyor |
 | 11 | **Taraftar duvarı** (örnek verilerle) | Örnek gönderiler ve yorumlar listeleniyor; beğenme ve yorum yazma yalnız ekranda çalışıyor, kaydedilmiyor |
 
+**Durum (18 Kasım 2026):** 0-11 arası tüm ekranlar yazıldı ve Android emülatörde (Pixel 7) tek tek denendi: giriş akışı, canlı maç simülasyonu (skor, akış, istatistik, canlı puan durumu), skor tahmini → puan → liderlik sırası, İlk 11 sürükle-bırak ve paylaşım görseli, duvar kağıdı kilit ekranı önizleme ve galeriye kaydetme, tuğla alma → sertifika → duvarda bulma, ses ölçer, taraftar kartı (QR), kokpit, taraftar duvarında beğeni ve yorum. iPhone'da denenmedi.
+
 ### 13.2. Notlar
+* **Veri kaynakları (18 Kasım 2026):** Fikstür (38 hafta), sonuçlar ve 2026-27 kadrosu starting11.com; puan durumu, haberler, tarihçe, yönetim ve görseller petrolspor.com. Kulübün sitesindeki oyuncu listesi geçen sezonundur, kullanılmadı. Kadro kaynağı yalnız kısa adları veriyor; tam adlar yalnız doğrulananlarda yazıldı.
+* **Demo olanlar (ekranda "demo" yazar):** canlı maç simülasyonu (maç henüz oynanmadı), giriş (şifre denetlenmez), ödeme (para alınmaz), liderlikteki diğer taraftarlar, duvardaki diğer tuğlalar, taraftar duvarı gönderileri, hatıra biletlerinin koltukları, kokpit rakamları, bildirimler.
+* **Giriş (karar, 18 Kasım 2026):** e-posta + şifre; ayrıca "Üye olmadan devam et" (misafir).
+* **Rakip armaları:** lisanslı olduğu için kullanılmadı; rakipler üç harfli kodla nötr rozet. Oyuncu fotoğrafı da yok; forma numaralı yer tutucu.
+* **Ses ölçer:** gerçek desibel değil, 0-100 arası "tribün gücü" puanı (10.5'teki düzeltme uygulandı). Sessiz ortam için "Mikrofonsuz dene" var.
+* **Uygulama ikonu ve açılış:** kulübün arması ve yazı logosu (petrolspor.com). Yayın için kulübün yazılı izni gerekir (10.2).
 * **Belgedeki Faz 1'e eklenenler (öneri):** Skor tahmini (4) ve Başkan Kokpiti (10). İkisi de yönetim sunumunda en çok soru gelecek yerlerdir.
 * **Faz 1 dışında kalanlar:** Mağaza, Petrolspor Plus, Esnaf Sadakat Ağı, radyo, ışık şovu, GPS check-in, trivia.
 * **Alt menü (karar, 18 Kasım 2026):** Ana Sayfa · Maçlar · Oyna · Galeri · Profil. Biçim: sabit çubuk (8.4).
-* **Tema (karar, 18 Kasım 2026):** Prototip koyu temada yapılır. Açık tema sonraki fazda eklenir.
+* **Tema (karar, 18 Kasım 2026; güncelleme 19 Kasım 2026):** Varsayılan koyu temadır. Açık tema da eklendi: mobilde Profil > Görünüm (Sistem / Açık / Koyu), web'de üst bardaki güneş / ay düğmesi. Seçim cihazda saklanır. Fotoğraflı açılışlar (mobil karşılama, web ana sayfa üstü) ve anıt duvarı paneli her temada koyu kalır.
+* **Yan menü (19 Kasım 2026):** Batman360'taki sol menü kalıbı Petrolspor tasarımıyla eklendi. Sekmelerin sol üstündeki düğmeyle açılır. Üstte kırmızı gradyanlı taraftar bloğu (arma, ad, kart no, PetrolPuan, sezon sırası); altında Maç / Oyna / Taraftar / Kulüp bölümleri; en altta sabit görünüm seçimi (Koyu / Açık / Sistem) ve çıkış. Alt menü (5 sekme) aynen duruyor.
 * **İkonlar (karar, 18 Kasım 2026):** Petrolspor renkleriyle gradyanlı tek ikon seti; çok renkli ikon yok.
 * **Taraftar duvarının yeri (öneri):** Ana sayfada bir bölüm; "Tümü" ile tam liste ekranı açılır. Ayrı sekme açılmaz.
 * **Veri:** Tüm ekranlar aynı sahte veri klasöründen okur; alan adları Bölüm 6'daki tablolarla aynı tutulur.
 
+### 13.3. Mobil Bitince: Web'e Geç
+* **Durum (18 Kasım 2026):** Web sitesi `web/` klasöründe yazıldı (Next.js 16): Ana sayfa, Maçlar, Kadro, Haberler (+ haber detayı), Kulüp, Uygulama tanıtımı. Üretim derlemesi geçti (17 sayfa); masaüstü ve telefon genişliğinde tarayıcıda denendi. Veri ve renkler mobilden `npm run sync` ile gelir. Yönetim paneli (canlı maç konsolu, haber girişi) Faz 2'dedir, yapılmadı.
+* [x] **Web'e geç (talimat, 18 Kasım 2026):** 13.1'deki mobil ekranların tamamı (0-11) bitip emülatörde test edildikten sonra web tarafına geçilir. Web bitmeden mobil ekranlar yarım bırakılmaz.
+* **Web kapsamı:** Kulübün yeni sitesi (şu anki site: https://petrolspor.com/). Ayrı Next.js uygulaması, `web/` klasöründe (karar, Bölüm 5); mobildeki tema, tipler ve sahte veriyle aynı kaynaktan beslenir.
+* **Amaç:** Mobil uygulama ve web birlikte kulüp yönetimine satış sunumu olarak gösterilecek; ikisi de sunumda elde gezdirilebilir, hatasız ve gerçekçi veriyle dolu olmalıdır.

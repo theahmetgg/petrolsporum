@@ -1,4 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { nextSkip } from "@/lib/pagination";
+import type { ProductFilter } from "@/mocks/store";
 import { cockpitService, contentService, fanService, matchService, storeService, type LeaderboardPeriod } from "@/services";
 
 /**
@@ -26,5 +28,14 @@ export const useFanPosts = () => useQuery({ queryKey: ["fan-posts"], queryFn: fa
 
 export const useCockpit = () => useQuery({ queryKey: ["cockpit"], queryFn: cockpitService.stats, ...STATIC });
 
-export const useProducts = () => useQuery({ queryKey: ["products"], queryFn: storeService.products, ...STATIC });
+/** Mağaza ürünleri: sayfa sayfa (kaydırdıkça sonraki sayfa). Filtre değişince liste baştan yüklenir. */
+export const useProductPages = (filter: ProductFilter) =>
+  useInfiniteQuery({
+    queryKey: ["products", "pages", filter],
+    queryFn: ({ pageParam }) => storeService.page(filter, pageParam),
+    initialPageParam: 0,
+    getNextPageParam: nextSkip,
+    ...STATIC,
+  });
 export const useProduct = (id: string) => useQuery({ queryKey: ["products", id], queryFn: () => storeService.product(id), enabled: !!id, ...STATIC });
+export const useFeaturedProducts = () => useQuery({ queryKey: ["products", "featured"], queryFn: storeService.featured, ...STATIC });

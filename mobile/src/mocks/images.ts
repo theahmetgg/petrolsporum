@@ -35,31 +35,6 @@ export const IMAGES = {
   "wp-nostalgia-1976": require("../../assets/wallpapers/nostalgia-1976.jpg"),
   "wp-nostalgia-1991": require("../../assets/wallpapers/nostalgia-1991.jpg"),
 
-  // Mağaza ürün fotoğrafları (petrolspor.com/magaza); anahtar = ürün kimliği
-  p1: require("../../assets/store/p1.jpg"),
-  p2: require("../../assets/store/p2.jpg"),
-  p3: require("../../assets/store/p3.jpg"),
-  p4: require("../../assets/store/p4.jpg"),
-  p5: require("../../assets/store/p5.jpg"),
-  p6: require("../../assets/store/p6.jpg"),
-  p7: require("../../assets/store/p7.jpg"),
-  p8: require("../../assets/store/p8.jpg"),
-  p9: require("../../assets/store/p9.jpg"),
-  p10: require("../../assets/store/p10.jpg"),
-  p11: require("../../assets/store/p11.jpg"),
-  p12: require("../../assets/store/p12.jpg"),
-  p13: require("../../assets/store/p13.jpg"),
-  p14: require("../../assets/store/p14.jpg"),
-  p15: require("../../assets/store/p15.jpg"),
-  p16: require("../../assets/store/p16.jpg"),
-  p17: require("../../assets/store/p17.jpg"),
-  p18: require("../../assets/store/p18.jpg"),
-  p19: require("../../assets/store/p19.jpg"),
-  p20: require("../../assets/store/p20.jpg"),
-  p21: require("../../assets/store/p21.jpg"),
-  p22: require("../../assets/store/p22.jpg"),
-  p23: require("../../assets/store/p23.jpg"),
-  p24: require("../../assets/store/p24.jpg"),
 } as const;
 
 export type ImageKey = keyof typeof IMAGES;

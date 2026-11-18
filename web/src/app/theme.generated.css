@@ -1,0 +1,126 @@
+/* BU DOSYA OTOMATİK ÜRETİLİR — elle düzenlemeyin. Kaynak: mobile/src/theme/tokens.js (npm run sync) */
+@theme inline {
+  --color-brand: var(--c-brand);
+  --color-brand-fill: var(--c-brand-fill);
+  --color-brand-fillPressed: var(--c-brand-fillPressed);
+  --color-brand-pressed: var(--c-brand-pressed);
+  --color-brand-strong: var(--c-brand-strong);
+  --color-brand-soft: var(--c-brand-soft);
+  --color-brand-border: var(--c-brand-border);
+  --color-ink: var(--c-ink);
+  --color-ink-secondary: var(--c-ink-secondary);
+  --color-ink-muted: var(--c-ink-muted);
+  --color-ink-disabled: var(--c-ink-disabled);
+  --color-ink-inverse: var(--c-ink-inverse);
+  --color-surface: var(--c-surface);
+  --color-surface-bg: var(--c-surface-bg);
+  --color-surface-muted: var(--c-surface-muted);
+  --color-surface-sunken: var(--c-surface-sunken);
+  --color-surface-logo: var(--c-surface-logo);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-mono-solid: var(--c-mono-solid);
+  --color-mono-onSolid: var(--c-mono-onSolid);
+  --color-mono-fill: var(--c-mono-fill);
+  --color-mono-fillStrong: var(--c-mono-fillStrong);
+  --color-mono-line: var(--c-mono-line);
+  --color-success: var(--c-success);
+  --color-success-soft: var(--c-success-soft);
+  --color-danger: var(--c-danger);
+  --color-danger-soft: var(--c-danger-soft);
+  --color-danger-pressed: var(--c-danger-pressed);
+  --color-danger-border: var(--c-danger-border);
+  --color-warning: var(--c-warning);
+  --color-warning-soft: var(--c-warning-soft);
+  --color-info: var(--c-info);
+  --color-info-soft: var(--c-info-soft);
+  --radius-control: 14px;
+  --radius-box: 24px;
+  --radius-hero: 26px;
+  --radius-block: 30px;
+}
+
+/* Koyu tema (varsayılan) */
+:root,
+[data-theme="dark"] {
+  --c-brand: #DE1606;
+  --c-brand-fill: #C41205;
+  --c-brand-fillPressed: #A00603;
+  --c-brand-pressed: #C41205;
+  --c-brand-strong: #FF6B57;
+  --c-brand-soft: #2A0C0A;
+  --c-brand-border: #5C0705;
+  --c-ink: #FFFFFF;
+  --c-ink-secondary: #BBBBBB;
+  --c-ink-muted: #888888;
+  --c-ink-disabled: #626368;
+  --c-ink-inverse: #FFFFFF;
+  --c-surface: #272727;
+  --c-surface-bg: #121317;
+  --c-surface-muted: #323232;
+  --c-surface-sunken: #3B3C42;
+  --c-surface-logo: #FFFFFF;
+  --c-line: #3B3C42;
+  --c-line-strong: #4A4B52;
+  --c-mono-solid: #FFFFFF;
+  --c-mono-onSolid: #121317;
+  --c-mono-fill: #272727;
+  --c-mono-fillStrong: #323232;
+  --c-mono-line: #3B3C42;
+  --c-success: #00BA7C;
+  --c-success-soft: #0A2419;
+  --c-danger: #FF4D6D;
+  --c-danger-soft: #2B0E16;
+  --c-danger-pressed: #E11D48;
+  --c-danger-border: #4D1826;
+  --c-warning: #FFD400;
+  --c-warning-soft: #2A2306;
+  --c-info: #1D9BF0;
+  --c-info-soft: #071D2E;
+  color-scheme: dark;
+}
+
+/* Açık tema */
+[data-theme="light"] {
+  --c-brand: #DE1606;
+  --c-brand-fill: #C41205;
+  --c-brand-fillPressed: #A00603;
+  --c-brand-pressed: #C41205;
+  --c-brand-strong: #A00603;
+  --c-brand-soft: #FDF1F0;
+  --c-brand-border: #F5C2BD;
+  --c-ink: #0F172A;
+  --c-ink-secondary: #475569;
+  --c-ink-muted: #94A3B8;
+  --c-ink-disabled: #CBD5E1;
+  --c-ink-inverse: #FFFFFF;
+  --c-surface: #FFFFFF;
+  --c-surface-bg: #FFFFFF;
+  --c-surface-muted: #F3F3F3;
+  --c-surface-sunken: #E2E8F0;
+  --c-surface-logo: #FFFFFF;
+  --c-line: #EEF2F6;
+  --c-line-strong: #E2E8F0;
+  --c-mono-solid: #0A0A0A;
+  --c-mono-onSolid: #FFFFFF;
+  --c-mono-fill: #F9F9F9;
+  --c-mono-fillStrong: #F3F3F3;
+  --c-mono-line: #ECECEC;
+  --c-success: #16A34A;
+  --c-success-soft: #ECFDF3;
+  --c-danger: #E11D48;
+  --c-danger-soft: #FFF1F3;
+  --c-danger-pressed: #BE123C;
+  --c-danger-border: #FECDD6;
+  --c-warning: #D97706;
+  --c-warning-soft: #FFFBEB;
+  --c-info: #2563EB;
+  --c-info-soft: #EFF6FF;
+  color-scheme: light;
+}
+
+:root {
+  --gradient-signature: linear-gradient(180deg, #DE1606, #A00603, #620603, #240807);
+  --gradient-icon: linear-gradient(180deg, #FF5A45, #B00A05);
+  --scrim: #0C0606;
+}

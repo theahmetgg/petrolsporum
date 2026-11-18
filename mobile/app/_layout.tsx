@@ -19,6 +19,7 @@ import { useSessionStore } from "../src/stores/sessionStore";
 import { usePredictionStore } from "../src/stores/predictionStore";
 import { useLineupStore } from "../src/stores/lineupStore";
 import { useBrickStore } from "../src/stores/brickStore";
+import { useStoreNotifyStore } from "../src/stores/storeNotifyStore";
 import { ThemeProvider, useTheme } from "../src/theme";
 import { Toast } from "../src/components/Toast";
 import { ConfirmHost } from "../src/components/common/ConfirmHost";
@@ -61,6 +62,7 @@ function RootLayout() {
     usePredictionStore.getState().hydrate().catch(console.warn);
     useLineupStore.getState().hydrate().catch(console.warn);
     useBrickStore.getState().hydrate().catch(console.warn);
+    useStoreNotifyStore.getState().hydrate().catch(console.warn);
   }, []);
 
   const [fontsLoaded] = useAppFonts();

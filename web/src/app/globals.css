@@ -1,0 +1,77 @@
+@import "tailwindcss";
+/* Renkler ve köşe yarıçapları mobil uygulamanın token dosyasından üretilir (npm run sync) */
+@import "./theme.generated.css";
+
+@theme inline {
+  --font-sans: var(--font-poppins);
+  --font-heading: var(--font-barlow);
+}
+
+html {
+  background: var(--c-surface-bg);
+  scroll-behavior: smooth;
+}
+
+/* Yazı logosu temaya göre: koyu zeminde beyaz, açık zeminde siyah. İkisi de sayfadadır, biri gizlenir. */
+.logo-on-light {
+  display: none;
+}
+[data-theme="light"] .logo-on-dark {
+  display: none;
+}
+[data-theme="light"] .logo-on-light {
+  display: block;
+}
+/* Her temada koyu kalan bölümün (data-theme="dark") içinde beyaz logo geri gelir */
+[data-theme="light"] [data-theme="dark"] .logo-on-dark {
+  display: block;
+}
+[data-theme="light"] [data-theme="dark"] .logo-on-light {
+  display: none;
+}
+
+body {
+  background: var(--c-surface-bg);
+  color: var(--c-ink);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+}
+
+/* Skor ve başlık yazısı: dar büyük harf (mobildeki Heading bileşeniyle aynı karar, Ar-Ge belgesi 8.4).
+   `lang="tr"` sayesinde tarayıcı i → İ dönüşümünü Türkçe kurallarıyla yapar. */
+.heading {
+  font-family: var(--font-barlow), var(--font-poppins), sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+}
+
+/* İmza gradyan: parlak kırmızıdan siyaha yakın bordoya (mobildeki SignatureBlock) */
+.bg-signature {
+  background: var(--gradient-signature);
+}
+
+/* Fotoğraf üstündeki karartma: altta sayfa zeminine karışır */
+.scrim-bottom {
+  background: linear-gradient(180deg, rgb(12 6 6 / 0.35) 0%, rgb(12 6 6 / 0.15) 30%, rgb(12 6 6 / 0.8) 68%, var(--c-surface-bg) 100%);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-brand-strong);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

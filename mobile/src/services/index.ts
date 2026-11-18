@@ -1,4 +1,4 @@
-import type { CockpitStats, FanPost, LeaderboardRow, Match, MemoryTicket, MonumentBrick, NewsItem, Player, Product, StandingRow, Wallpaper } from "@/types";
+import type { CockpitStats, FanPost, LeaderboardRow, Match, MemoryTicket, MonumentBrick, NewsItem, Page, Player, Product, StandingRow, Wallpaper } from "@/types";
 import { MATCHES } from "@/mocks/matches";
 import { STANDINGS } from "@/mocks/standings";
 import { PLAYERS } from "@/mocks/players";
@@ -6,7 +6,7 @@ import { NEWS } from "@/mocks/news";
 import { WALLPAPERS } from "@/mocks/wallpapers";
 import { FAN_POSTS, LEADERBOARDS, MEMORY_TICKETS, SOLD_BRICKS } from "@/mocks/fans";
 import { COCKPIT } from "@/mocks/cockpit";
-import { PRODUCTS } from "@/mocks/store";
+import { PRODUCTS, STORE_PAGE_SIZE, matchesFilter, type ProductFilter } from "@/mocks/store";
 
 /**
  * SERVİS KATMANI. Ekranlar veriyi yalnız buradan (ve `@/hooks/queries` içindeki sorgulardan) okur; `@/mocks`
@@ -47,6 +47,16 @@ export const cockpitService = {
 };
 
 export const storeService = {
-  products: (): Promise<Product[]> => reply(PRODUCTS),
+  /**
+   * Sayfalı ürün listesi (sunucudaki GET /products?category=&skip=&limit= karşılığı). Mobil kaydırdıkça sonraki
+   * sayfayı ister; böylece 56 ürünün satırları ve fotoğrafları bir anda değil, gerektikçe yüklenir.
+   */
+  page: (filter: ProductFilter, skip: number, limit: number = STORE_PAGE_SIZE): Promise<Page<Product>> => {
+    const list = PRODUCTS.filter((p) => matchesFilter(p, filter));
+    const items = list.slice(skip, skip + limit);
+    return reply({ items, total: list.length, skip, limit, has_more: skip + items.length < list.length });
+  },
   product: (id: string): Promise<Product | null> => reply(PRODUCTS.find((p) => p.id === id) ?? null),
+  /** Ana sayfa rafı: yeni sezon ürünleri */
+  featured: (): Promise<Product[]> => reply(PRODUCTS.filter((p) => p.is_new)),
 };
