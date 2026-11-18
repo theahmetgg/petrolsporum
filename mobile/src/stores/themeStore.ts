@@ -8,8 +8,8 @@ export type ThemePreference = "system" | "light" | "dark";
 export type ThemeScheme = "light" | "dark";
 
 /**
- * Prototip koyu temada yapılır (karar, 18 Kasım 2026): tercih yapılmadıysa uygulama koyu açılır, telefonun ayarını izlemez.
- * Açık tema sonraki fazda eklenince bu değer "system" yapılır.
+ * Petrolspor koyu tema önceliklidir (karar, 18 Kasım 2026): tercih yapılmadıysa uygulama koyu açılır.
+ * Açık tema da vardır (19 Kasım 2026): kullanıcı Profil > Görünüm ile Sistem / Açık / Koyu seçer; seçim telefonda saklanır.
  */
 export const DEFAULT_THEME_PREFERENCE: ThemePreference = "dark";
 

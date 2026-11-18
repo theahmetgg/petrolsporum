@@ -1,12 +1,17 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import React from "react";
 import { CustomTabBar } from "@/components/common/CustomTabBar";
 import { TabBarProvider } from "@/contexts/TabBarContext";
+import { useSessionStore } from "@/stores/sessionStore";
 import { useColors } from "@/theme";
 
 /** Alt menü (karar, 18 Kasım 2026): Ana Sayfa · Maçlar · Oyna · Galeri · Profil */
 export default function TabLayout() {
   const colors = useColors();
+  const fan = useSessionStore((s) => s.fan);
+
+  // Sekmeler oturum ister (misafir de oturumdur); oturum yoksa karşılama ekranı
+  if (!fan) return <Redirect href="/(auth)/welcome" />;
 
   return (
     <TabBarProvider value={true}>

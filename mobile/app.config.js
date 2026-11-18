@@ -46,6 +46,23 @@ export default {
       backgroundColor: "#000000",
       enforceContrast: false,
     },
-    plugins: ["./plugins/withEdgeToEdgeColors", "expo-router", "expo-secure-store", "expo-font"],
+    plugins: [
+      "./plugins/withEdgeToEdgeColors",
+      "expo-router",
+      "expo-secure-store",
+      "expo-font",
+      "expo-asset",
+      // Tribün modu ses ölçeri: yalnız anlık ses seviyesi okunur; ses hiçbir yere gönderilmez
+      ["expo-audio", { microphonePermission: "Tribün modundaki ses ölçer için mikrofonun ses seviyesini okuruz. Ses hiçbir yere gönderilmez." }],
+      // Duvar kağıdını galeriye kaydetmek için (yalnız yazma izni)
+      [
+        "expo-media-library",
+        {
+          photosPermission: "Duvar kağıdını galerine kaydetmek için fotoğraflarına erişiriz.",
+          savePhotosPermission: "Duvar kağıdını galerine kaydetmek için izin gerekir.",
+          isAccessMediaLocationEnabled: false,
+        },
+      ],
+    ],
   },
 };

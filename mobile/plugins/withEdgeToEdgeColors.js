@@ -2,7 +2,7 @@
  * withEdgeToEdgeColors.js
  *
  * Ensures navigation bar background matches the app theme:
- * - Sets activityBackground to the theme page background: #121317 in both (prototype is dark-only; app forces dark even when the phone is in light mode)
+ * - Sets activityBackground to the theme page background: #121317 (the app is dark by default even when the phone is in light mode; the window is only visible for a moment under the red splash, so it stays dark in both)
  * - Splash background is brand red #DE1606 in both themes
  * - Sets enforceNavigationBarContrast=false in styles.xml
  * - Splash theme: transparent navigation bar (no black bar under the splash in 3-button mode)

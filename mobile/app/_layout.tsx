@@ -15,10 +15,15 @@ import { configureReanimatedLogger, ReanimatedLogLevel } from "react-native-rean
 import { queryClient } from "../src/lib/queryClient";
 import { useAppFonts } from "../src/lib/fonts";
 import { useThemeStore } from "../src/stores/themeStore";
+import { useSessionStore } from "../src/stores/sessionStore";
+import { usePredictionStore } from "../src/stores/predictionStore";
+import { useLineupStore } from "../src/stores/lineupStore";
+import { useBrickStore } from "../src/stores/brickStore";
 import { ThemeProvider, useTheme } from "../src/theme";
 import { Toast } from "../src/components/Toast";
 import { ConfirmHost } from "../src/components/common/ConfirmHost";
 import { OverlayHost } from "../src/components/layout/FullScreenOverlay";
+import DrawerMenu from "../src/components/DrawerMenu";
 import { AnimatedSplash } from "../src/components/common/AnimatedSplash";
 import { NavigationBarController } from "../src/hooks/useSystemNavigationBar";
 import { ErrorBoundary } from "../src/components/common/ErrorBoundary";
@@ -41,19 +46,25 @@ const SPLASH_MAX_WAIT_MS = 5000;
 const SPLASH_ICON_MAX_WAIT_MS = 1000;
 
 /**
- * Kök düzen (Batman360 iskeleti). Prototipte sunucu yok: oturum, bildirim, çevrimdışı kuyruk ve sürüm kapısı
- * burada yer almaz; Faz 2'de eklenir.
+ * Kök düzen (Batman360 iskeleti). Prototipte sunucu yok: oturum sahtedir (`sessionStore`); bildirim, çevrimdışı
+ * kuyruk ve sürüm kapısı burada yer almaz, Faz 2'de eklenir.
  */
 function RootLayout() {
   const themeHydrated = useThemeStore((state) => state.isHydrated);
+  const sessionLoading = useSessionStore((state) => state.isLoading);
   const theme = useTheme();
 
   useEffect(() => {
     useThemeStore.getState().hydrate().catch(console.warn);
+    useSessionStore.getState().init().catch(console.warn);
+    // Telefonda saklanan demo verileri: tahminler, kurulan ilk 11, anıt duvarı tuğlaları
+    usePredictionStore.getState().hydrate().catch(console.warn);
+    useLineupStore.getState().hydrate().catch(console.warn);
+    useBrickStore.getState().hydrate().catch(console.warn);
   }, []);
 
   const [fontsLoaded] = useAppFonts();
-  const isAppReady = fontsLoaded && themeHydrated;
+  const isAppReady = fontsLoaded && themeHydrated && !sessionLoading;
 
   // Animasyonlu açılış: katman telefonun açılış ekranıyla aynı ilk karede altında bekler;
   // telefonun ekranı kapanınca oynar, bitince ağaçtan kalkar
@@ -109,9 +120,12 @@ function RootLayout() {
                       >
                         <Stack.Screen name="index" />
                         <Stack.Screen name="(tabs)" />
+                        <Stack.Screen name="(auth)" />
                       </Stack>
                       {/* Tam ekran katmanlar (fotoğraf önizleme vb.): RN Modal yerine ana pencerede, Stack'in üstünde */}
                       <OverlayHost />
+                      {/* Yan menü: ana pencerede tek kopya, gezinme yığınının üstünde (sekmeler drawerStore ile açar) */}
+                      <DrawerMenu />
                       {/* Animasyonlu açılış: her şeyin üstünde, bitince kaldırılır */}
                       {!splashDone ? (
                         <AnimatedSplash play={splashPlay} onReady={() => setSplashIconShown(true)} onFinish={() => setSplashDone(true)} />

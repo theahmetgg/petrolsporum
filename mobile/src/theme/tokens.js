@@ -72,6 +72,21 @@ const colors = {
     subtle: "#71717A", // Üçüncül metin, tutamak
     like: "#F43F5E", // Medya üstündeki beğeni kalbi
   },
+  // Futbol sahası (diziliş bileşeni): temadan bağımsız, iki modda aynı koyu çim
+  pitch: {
+    DEFAULT: "#17472A", // Çim
+    stripe: "#1B5231", // Biçme şeridi (bir ton açık)
+    line: "rgba(255,255,255,0.5)", // Saha çizgileri
+  },
+  // Anıt duvarı tuğla renkleri (Ar-Ge belgesi 2.1): kırmızı, beyaz, altın, platin; boş yer koyu
+  brick: {
+    red: "#C41205",
+    white: "#F1ECEA",
+    gold: "#E0B24A",
+    platinum: "#9FB3C8",
+    empty: "#23242A",
+    mine: "#FFFFFF", // Kullanıcının kendi tuğlasının çerçevesi
+  },
 };
 
 /**
@@ -126,6 +141,8 @@ const darkColors = {
   scrim: colors.scrim,
   system: colors.system,
   media: colors.media,
+  pitch: colors.pitch,
+  brick: colors.brick,
 };
 
 const palettes = { light: colors, dark: darkColors };
