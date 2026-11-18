@@ -1,0 +1,33 @@
+import { Tabs } from "expo-router";
+import React from "react";
+import { CustomTabBar } from "@/components/common/CustomTabBar";
+import { TabBarProvider } from "@/contexts/TabBarContext";
+import { useColors } from "@/theme";
+
+/** Alt menü (karar, 18 Kasım 2026): Ana Sayfa · Maçlar · Oyna · Galeri · Profil */
+export default function TabLayout() {
+  const colors = useColors();
+
+  return (
+    <TabBarProvider value={true}>
+      <Tabs
+        initialRouteName="index"
+        // Android standardı: hangi sekmede olursan ol geri → Ana Sayfa → uygulama arka plana alınır
+        backBehavior="initialRoute"
+        tabBar={(props) => <CustomTabBar {...props} />}
+        screenOptions={{
+          headerShown: false,
+          // Görünmeyen sekmeler dondurulur: arka plandaki durum değişiklikleri onları yeniden çizdirmez
+          freezeOnBlur: true,
+          sceneStyle: { backgroundColor: colors.surface.bg },
+        }}
+      >
+        <Tabs.Screen name="index" options={{ title: "Ana Sayfa" }} />
+        <Tabs.Screen name="matches" options={{ title: "Maçlar" }} />
+        <Tabs.Screen name="play" options={{ title: "Oyna" }} />
+        <Tabs.Screen name="gallery" options={{ title: "Galeri" }} />
+        <Tabs.Screen name="profile" options={{ title: "Profil" }} />
+      </Tabs>
+    </TabBarProvider>
+  );
+}

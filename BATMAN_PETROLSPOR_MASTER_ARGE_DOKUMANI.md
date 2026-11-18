@@ -334,9 +334,9 @@ petrolspor/
 * **Saha dizilişi:** Tek bileşen olarak yazılır; hem maç detayındaki "Kadro" sekmesinde hem "İlk 11'ini Kur"da kullanılır.
 * **Kullanılmayacaklar:** Bahis oranı, çoklu spor / çoklu lig seçimi, lisanslı oyuncu görselleri.
 
-### 8.4. Açık Tasarım Kararları
-* [ ] **Yazı tipi:** Skor ve başlıklarda dar büyük harfli ayrı bir yazı tipi mi, yalnız Poppins mi? İki seçenek tasarım duvarında yan yana gösterilecek, beğenilen seçilecek (karar yöntemi, 18 Kasım 2026).
-* [ ] **Alt menü:** Yüzen hap mı, Batman360'taki sabit çubuk mu? İki seçenek tasarım duvarında yan yana gösterilecek, beğenilen seçilecek (karar yöntemi, 18 Kasım 2026).
+### 8.4. Tasarım Kararları
+* [x] **Yazı tipi (karar, 18 Kasım 2026):** Skor ve başlıklarda dar büyük harfli ayrı yazı tipi (Barlow Condensed Bold, `Heading` bileşeni). Gövde, buton ve etiketler Poppins kalır. İki seçenek tasarım duvarında yan yana denendi.
+* [x] **Alt menü (karar, 18 Kasım 2026):** Batman360'taki sabit çubuk (yalnız ikon, seçili sekmede gri kapsül). Yüzen hap tasarım duvarında denendi, seçilmedi.
 ---
 
 # BÖLÜM 9: KULÜP UYGULAMALARI KARŞILAŞTIRMASI
@@ -549,7 +549,7 @@ petrolspor/
 
 | # | Ekran | Bitti sayılır |
 |:--|:---|:---|
-| 0 | **İskelet:** kırmızı-siyah tema, ekran çatısı, alt menü, bileşen vitrini, tasarım duvarı | Boş 5 sekme koyu temada ve iki gezinme modunda (3 tuş / jest) sorunsuz açılıyor; tasarım duvarında yazı tipi (dar büyük harf / Poppins) ve alt menü (yüzen hap / sabit çubuk) seçenekleri yan yana görünüyor |
+| 0 | **İskelet:** kırmızı-siyah tema, ekran çatısı, alt menü, bileşen vitrini, tasarım duvarı — **bitti (18 Kasım 2026)** | Boş 5 sekme koyu temada ve iki gezinme modunda (3 tuş / jest) sorunsuz açılıyor; tasarım duvarında yazı tipi (dar büyük harf / Poppins) ve alt menü (yüzen hap / sabit çubuk) seçenekleri yan yana görünüyor |
 | 1 | **Karşılama ve giriş** (sahte) | Karşılama → giriş → ana sayfa akışı çalışıyor |
 | 2 | **Ana sayfa** | Manşet, sıradaki maç geri sayımı, kısayollar gerçekçi veriyle dolu |
 | 3 | **Maçlar:** fikstür listesi + maç detayı (Akış / Kadro / İstatistik / Puan) | Simüle edilen canlı maçta gol gelince skor, akış ve puan durumu değişiyor |
@@ -565,7 +565,7 @@ petrolspor/
 ### 13.2. Notlar
 * **Belgedeki Faz 1'e eklenenler (öneri):** Skor tahmini (4) ve Başkan Kokpiti (10). İkisi de yönetim sunumunda en çok soru gelecek yerlerdir.
 * **Faz 1 dışında kalanlar:** Mağaza, Petrolspor Plus, Esnaf Sadakat Ağı, radyo, ışık şovu, GPS check-in, trivia.
-* **Alt menü (karar, 18 Kasım 2026):** Ana Sayfa · Maçlar · Oyna · Galeri · Profil.
+* **Alt menü (karar, 18 Kasım 2026):** Ana Sayfa · Maçlar · Oyna · Galeri · Profil. Biçim: sabit çubuk (8.4).
 * **Tema (karar, 18 Kasım 2026):** Prototip koyu temada yapılır. Açık tema sonraki fazda eklenir.
 * **İkonlar (karar, 18 Kasım 2026):** Petrolspor renkleriyle gradyanlı tek ikon seti; çok renkli ikon yok.
 * **Taraftar duvarının yeri (öneri):** Ana sayfada bir bölüm; "Tümü" ile tam liste ekranı açılır. Ayrı sekme açılmaz.
