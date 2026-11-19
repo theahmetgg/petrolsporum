@@ -26,7 +26,7 @@ export default async function NewsDetailPage({ params }: PageProps<"/haberler/[i
   const others = NEWS.filter((n) => n.id !== item.id).slice(0, 3);
 
   return (
-    <Container className="mt-8">
+    <Container className="reveal mt-8">
       <Link href="/haberler" className="text-sm font-medium text-ink-secondary hover:text-ink">
         ← Haberler
       </Link>
@@ -36,7 +36,7 @@ export default async function NewsDetailPage({ params }: PageProps<"/haberler/[i
         </p>
         <h1 className="heading mt-3 text-5xl md:text-6xl">{item.title}</h1>
         <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-hero">
-          <Image src={`/club/${item.image}.jpg`} alt="" fill priority sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
+          <Image src={`/club/${item.image}.jpg`} alt="" fill loading="eager" fetchPriority="high" sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
         </div>
         <p className="mt-8 text-lg leading-relaxed text-ink-secondary">{item.summary}</p>
         <a href={item.source_url} target="_blank" rel="noopener noreferrer" className="mt-8 inline-block rounded-full bg-mono-fillStrong px-6 py-3 text-sm font-semibold hover:bg-surface-sunken">

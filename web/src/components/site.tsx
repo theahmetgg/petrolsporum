@@ -40,10 +40,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-mono-line bg-surface-bg/90 backdrop-blur">
       <Container className="flex h-16 items-center justify-between gap-6">
         <Link href="/" aria-label="Batman Petrolspor ana sayfa" className="flex shrink-0 items-center gap-3">
-          <Image src="/club/crest.png" alt="" width={40} height={40} priority />
+          <Image src="/club/crest.png" alt="" width={40} height={40} loading="eager" />
           <span className="hidden sm:block">
-            <Image src="/club/logo-white.png" alt="Batman Petrolspor" width={120} height={36} priority className="logo-on-dark" />
-            <Image src="/club/logo-dark.png" alt="Batman Petrolspor" width={120} height={36} priority className="logo-on-light" />
+            <Image src="/club/logo-white.png" alt="Batman Petrolspor" width={120} height={36} className="logo-on-dark" />
+            <Image src="/club/logo-dark.png" alt="Batman Petrolspor" width={120} height={36} className="logo-on-light" />
           </span>
         </Link>
         <nav aria-label="Ana menü" className="hidden items-center gap-1 md:flex">

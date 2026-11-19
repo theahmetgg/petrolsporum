@@ -43,8 +43,8 @@ export default function StorePage() {
               </a>
             </div>
           </div>
-          <Link href={`/magaza/${featured.id}`} className="group relative mx-auto block aspect-square w-full max-w-md" aria-label={`${featured.name}, incele`}>
-            <Image src={productImage(featured.image)} alt="" fill priority sizes="(min-width: 768px) 40vw, 90vw" className="object-contain drop-shadow-2xl transition-transform duration-500 group-hover:-rotate-2 group-hover:scale-105" />
+          <Link href={`/magaza/${featured.id}`} className="float-soft group relative mx-auto block aspect-square w-full max-w-md" aria-label={`${featured.name}, incele`}>
+            <Image src={productImage(featured.image)} alt="" fill loading="eager" fetchPriority="high" sizes="(min-width: 768px) 448px, 90vw" className="object-contain drop-shadow-2xl transition-transform duration-500 group-hover:-rotate-2 group-hover:scale-105" />
           </Link>
         </Container>
 
@@ -68,7 +68,7 @@ export default function StorePage() {
         </Container>
       </section>
 
-      <Container className="mt-14">
+      <Container className="reveal mt-14">
         <SectionTitle title="Fırsatlar" />
         <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4">
           {deals.map((product) => (
@@ -79,7 +79,7 @@ export default function StorePage() {
         </ul>
       </Container>
 
-      <Container className="mt-16">
+      <Container className="reveal mt-16">
         <div id="urunler" className="scroll-mt-28">
           <ProductGrid products={PRODUCTS} />
         </div>

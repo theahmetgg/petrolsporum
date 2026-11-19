@@ -1,21 +1,23 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import { FlatList, ScrollView, Text, View, useWindowDimensions } from "react-native";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+import { FlatList, ScrollView, Text, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ArrowRight, ChevronLeft } from "lucide-react-native";
 import { Screen } from "@/components/layout/Screen";
-import { AppText, EmptyState, Heading, IconButton, ListRowSkeleton, LoadingMore, Pill, PressableBox, SectionHeader, SignatureBlock, SignatureTopBar } from "@/components/ui";
+import { AppText, EmptyState, Heading, IconButton, LoadingMore, Pill, PressableBox, SectionHeader, SignatureBlock, SignatureTopBar, FirstLoadFade } from "@/components/ui";
+import { FIRST_LOAD_FADE_COUNT } from "@/components/ui/motion";
+import { HeroCardSkeleton, ProductGridSkeleton, ProductRailSkeleton, TileRailSkeleton } from "@/components/common/Skeletons";
 import { BOX_PRESS_SCALE } from "@/components/ui/PressableBox";
-import { ProductCard, ProductStage } from "@/components/store/ProductCard";
+import { ProductCard, ProductRail, ProductStage } from "@/components/store/ProductCard";
 import { useDeals, useProduct, useProductPages, useStoreCategories } from "@/hooks/queries";
 import { useNavigationMode } from "@/hooks/useNavigationMode";
 import { HeadingFonts } from "@/lib/fonts";
 import { flattenPages, pageTotal } from "@/lib/pagination";
 import { FEATURED_PRODUCT_ID, PRODUCT_FILTERS, type ProductFilter } from "@/mocks/store";
 import { storeImage, storeThumb } from "@/mocks/storeImages";
-import type { Product } from "@/types";
+import type { Product, ProductCategory } from "@/types";
 import { formatPrice } from "@/utils/format";
 import { gradients, radius, spacing, useTheme } from "@/theme";
 
@@ -31,13 +33,19 @@ const HEADER_PASSED_AT = 300;
 const FILL = { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 } as const;
 
 const openProduct = (product: Product) => router.push(`/store/${product.id}`);
+const goBack = () => router.back();
+const keyExtractor = (item: Product) => item.id;
+// Sabit stil nesneleri: her çizimde yenisi üretilirse liste "ayarım değişti" sanıp tüm satırları baştan çizer
+const COLUMN_WRAPPER = { gap: COLUMN_GAP, paddingHorizontal: spacing.screen } as const;
+const LIST_CONTENT = { paddingBottom: 40, rowGap: ROW_GAP } as const;
+const LIST_HEADER = { marginBottom: -ROW_GAP } as const;
 
 /**
  * Vitrin kartı: siyaha yakın sahnede yeni sezon forması (arka planı silinmiş fotoğraf). Arkada iri soluk "2026-27",
  * önde formanın büyük fotoğrafı, solda ürün adı ve fiyat. Kart iki temada da koyudur: kırmızı bloğun içinde
  * en güçlü karşıtlığı verir; üstündeki yazılar beyazdır.
  */
-function HeroCard({ product, width }: { product: Product; width: number }) {
+const HeroCard = memo(function HeroCard({ product, width }: { product: Product; width: number }) {
   const { colors } = useTheme();
   const height = Math.round(width * 0.98);
   const imageSize = Math.round(width * 0.9);
@@ -76,13 +84,13 @@ function HeroCard({ product, width }: { product: Product; width: number }) {
       </View>
     </PressableBox>
   );
-}
+});
 
 /** Kategori kutusu: sahne zemininde kategorinin vitrin ürünü, altında ad ve ürün sayısı */
-function CategoryTile({ title, count, image, onPress }: { title: string; count: number; image: string; onPress: () => void }) {
+const CategoryTile = memo(function CategoryTile({ title, count, image, onSelect }: { title: ProductCategory; count: number; image: string; onSelect: (category: ProductCategory) => void }) {
   return (
     <PressableBox
-      onPress={onPress}
+      onPress={() => onSelect(title)}
       pressScale={BOX_PRESS_SCALE}
       accessibilityRole="button"
       accessibilityLabel={`${title}, ${count} ürün`}
@@ -101,7 +109,7 @@ function CategoryTile({ title, count, image, onPress }: { title: string; count: 
       </ProductStage>
     </PressableBox>
   );
-}
+});
 
 /**
  * Mağaza (vitrin). Sıra: imza gradyan blokta vitrin kartı (yeni sezon forması) → kategori kutuları → fırsatlar rafı
@@ -110,7 +118,9 @@ function CategoryTile({ title, count, image, onPress }: { title: string; count: 
  *
  * Performans: ızgara sayfa sayfa gelir (12'şer; kaydırdıkça sonraki sayfa), liste sanaldır (`FlatList`: yalnız
  * ekrandaki satırlar çizilir), kartlar `memo`'dur ve 400 px küçük fotoğraf kullanır; 900 px fotoğraf yalnız vitrin
- * kartında ve ürün sayfasında yüklenir.
+ * kartında ve ürün sayfasında yüklenir. Liste başlığı (vitrin, koleksiyonlar, fırsatlar) ve listeye verilen
+ * işleyiciler sabittir (`useMemo` / `useCallback`): kaydırırken ya da sonraki sayfa yüklenirken başlık ve
+ * ekrandaki kartlar baştan çizilmez.
  */
 export default function StoreScreen() {
   const { colors, statusBarStyle } = useTheme();
@@ -118,8 +128,10 @@ export default function StoreScreen() {
   const { width } = useWindowDimensions();
   const listRef = useRef<FlatList<Product>>(null);
   const [filter, setFilter] = useState<ProductFilter>("Tümü");
-  // Izgaranın (kategori haplarının) listenin başından uzaklığı: kategori kutusuna basınca oraya kaydırılır
-  const [gridTop, setGridTop] = useState(0);
+  // Izgaranın (kategori haplarının) listenin başından uzaklığı: kategori kutusuna basınca oraya kaydırılır.
+  // Çizimi etkilemediği için durum değil referans (değişince ekran yeniden çizilmez).
+  const gridTop = useRef(0);
+  const pastHeaderRef = useRef(false);
   // Kırmızı blok kaydırılıp çıkınca durum çubuğunun arkasına sayfa zemini konur: saat ürün fotoğraflarının üstüne binmez
   const [pastHeader, setPastHeader] = useState(false);
 
@@ -132,84 +144,101 @@ export default function StoreScreen() {
   const total = pageTotal(pages.data);
   const cardWidth = Math.floor((width - spacing.screen * 2 - COLUMN_GAP) / 2);
 
+  const { hasNextPage, isFetchingNextPage, fetchNextPage, isLoading } = pages;
   const loadMore = useCallback(() => {
-    if (pages.hasNextPage && !pages.isFetchingNextPage) pages.fetchNextPage();
-  }, [pages]);
+    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   /** Filtreyi seçer ve ızgaranın başına kaydırır (kategori kutuları ve "Tümü" bağlantıları) */
   const showFilter = useCallback(
     (next: ProductFilter) => {
       setFilter(next);
-      listRef.current?.scrollToOffset({ offset: Math.max(0, gridTop - insetTop - 8), animated: true });
+      listRef.current?.scrollToOffset({ offset: Math.max(0, gridTop.current - insetTop - 8), animated: true });
     },
-    [gridTop, insetTop]
+    [insetTop]
+  );
+  const showDeals = useCallback(() => showFilter("İndirim"), [showFilter]);
+
+  const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const passed = e.nativeEvent.contentOffset.y > HEADER_PASSED_AT;
+    if (passed === pastHeaderRef.current) return;
+    pastHeaderRef.current = passed;
+    setPastHeader(passed);
+  }, []);
+
+  // İlk yüklemede (ve kategori değişince) ilk altı kart sırayla solarak gelir; sonrakiler animasyonsuz çizilir
+  // İlk yüklemede (ve kategori değişince) ilk altı kart sırayla solarak gelir. Yalnız o altı kart animasyon
+  // katmanıyla sarılır; kalan 50 kart ek katman olmadan düz çizilir (kaydırma ölçümü: takılan kare %11-14, animasyonsuz hâliyle aynı).
+  const renderItem = useCallback(
+    ({ item, index }: { item: Product; index: number }) => {
+      const card = <ProductCard product={item} width={cardWidth} onPress={openProduct} />;
+      return index < FIRST_LOAD_FADE_COUNT ? <FirstLoadFade index={index}>{card}</FirstLoadFade> : card;
+    },
+    [cardWidth]
   );
 
-  const renderItem = useCallback(({ item }: { item: Product }) => <ProductCard product={item} width={cardWidth} onPress={openProduct} />, [cardWidth]);
-
-  const header = (
+  const heroWidth = width - spacing.screen * 2;
+  const header = useMemo(
+    () => (
     <View>
       <SignatureBlock bottomSpace={spacing.screen}>
-        <SignatureTopBar title="Mağaza" left={<IconButton icon={ChevronLeft} label="Geri" variant="frost" size={40} onPress={() => router.back()} />} />
+        <SignatureTopBar title="Mağaza" left={<IconButton icon={ChevronLeft} label="Geri" variant="frost" size={40} onPress={goBack} />} />
         <View style={{ paddingHorizontal: spacing.screen, marginTop: 14 }}>
-          {featured ? <HeroCard product={featured} width={width - spacing.screen * 2} /> : <View style={{ height: width - spacing.screen * 2 }} />}
+          {featured ? <HeroCard product={featured} width={heroWidth} /> : <HeroCardSkeleton height={Math.round(heroWidth * 0.98)} />}
         </View>
       </SignatureBlock>
 
       <View style={{ marginTop: spacing.section }}>
         <SectionHeader title="Koleksiyonlar" />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.screen, gap: 10 }}>
-          {(categories ?? []).map((c) => (
-            <CategoryTile key={c.category} title={c.category} count={c.count} image={c.image} onPress={() => showFilter(c.category)} />
-          ))}
-        </ScrollView>
-      </View>
-
-      {deals?.length ? (
-        <View style={{ marginTop: spacing.section }}>
-          <SectionHeader title="Fırsatlar" subtitle="İndirimdeki ürünler" onAction={() => showFilter("İndirim")} />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.screen, gap: 12 }}>
-            {deals.map((product) => (
-              <ProductCard key={product.id} product={product} width={DEAL_CARD} onPress={openProduct} />
+        {categories ? (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.screen, gap: 10 }}>
+            {categories.map((c) => (
+              <CategoryTile key={c.category} title={c.category} count={c.count} image={c.image} onSelect={showFilter} />
             ))}
           </ScrollView>
+        ) : (
+          <TileRailSkeleton width={TILE_W} height={TILE_H} />
+        )}
+      </View>
+
+      {!deals || deals.length ? (
+        <View style={{ marginTop: spacing.section }}>
+          <SectionHeader title="Fırsatlar" subtitle="İndirimdeki ürünler" onAction={showDeals} />
+          {deals ? <ProductRail products={deals} cardWidth={DEAL_CARD} onPress={openProduct} /> : <ProductRailSkeleton cardWidth={DEAL_CARD} />}
         </View>
       ) : null}
 
-      <View style={{ marginTop: spacing.section }} onLayout={(e) => setGridTop(e.nativeEvent.layout.y)}>
-        <SectionHeader title="Tüm ürünler" subtitle={pages.isLoading ? "Yükleniyor" : `${total} ürün`} />
+      <View style={{ marginTop: spacing.section }} onLayout={(e) => { gridTop.current = e.nativeEvent.layout.y; }}>
+        <SectionHeader title="Tüm ürünler" subtitle={isLoading ? "Yükleniyor" : `${total} ürün`} />
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.screen, gap: 8, paddingBottom: 18 }}>
           {PRODUCT_FILTERS.map((f) => (
             <Pill key={f} label={f} selected={filter === f} onPress={() => setFilter(f)} />
           ))}
         </ScrollView>
       </View>
-      {pages.isLoading ? (
-        <View style={{ paddingHorizontal: spacing.screen }}>
-          <ListRowSkeleton count={4} />
-        </View>
-      ) : null}
+      {isLoading ? <ProductGridSkeleton cardWidth={cardWidth} columnGap={COLUMN_GAP} rowGap={ROW_GAP} /> : null}
     </View>
+    ),
+    [featured, heroWidth, cardWidth, categories, deals, filter, total, isLoading, showFilter, showDeals]
   );
+  const empty = useMemo(() => (isLoading ? null : <EmptyState title="Bu kategoride ürün yok" description="Başka bir kategori seç." />), [isLoading]);
+  const footer = useMemo(() => (isFetchingNextPage ? <LoadingMore /> : null), [isFetchingNextPage]);
 
   return (
     <Screen withTopInset={false} statusBarStyle="light">
       <FlatList
         ref={listRef}
         data={products}
-        keyExtractor={(item) => item.id}
+        keyExtractor={keyExtractor}
         renderItem={renderItem}
         numColumns={2}
-        columnWrapperStyle={{ gap: COLUMN_GAP, paddingHorizontal: spacing.screen }}
-        contentContainerStyle={{ paddingBottom: 40, rowGap: ROW_GAP }}
+        columnWrapperStyle={COLUMN_WRAPPER}
+        contentContainerStyle={LIST_CONTENT}
         ListHeaderComponent={header}
-        ListHeaderComponentStyle={{ marginBottom: -ROW_GAP }}
-        ListEmptyComponent={pages.isLoading ? null : <EmptyState title="Bu kategoride ürün yok" description="Başka bir kategori seç." />}
-        ListFooterComponent={pages.isFetchingNextPage ? <LoadingMore /> : null}
-        onScroll={(e) => {
-          const passed = e.nativeEvent.contentOffset.y > HEADER_PASSED_AT;
-          if (passed !== pastHeader) setPastHeader(passed);
-        }}
+        ListHeaderComponentStyle={LIST_HEADER}
+        ListEmptyComponent={empty}
+        ListFooterComponent={footer}
+        onScroll={onScroll}
         scrollEventThrottle={64}
         onEndReached={loadMore}
         onEndReachedThreshold={0.6}

@@ -75,7 +75,37 @@ export interface LiveMatchView {
   reset: () => void;
 }
 
-/** Canlı maçın o anki görünümü. Dakika değiştikçe bileşeni yeniden çizer. */
+/**
+ * Skorun tek sayılık özeti (ev * 100 + deplasman); maç başlamadıysa -1. Dakika ilerlese de yalnız gol olunca değişir.
+ * Seçici ilkel değer döndürdüğü için bileşen her dakika değil, yalnız skor değişince yeniden çizilir.
+ */
+const selectScoreKey = (s: LiveMatchState) => {
+  if (s.status === "idle") return -1;
+  let key = 0;
+  for (const e of LIVE_SCRIPT) if (e.minute <= s.minute) key = e.home_score * 100 + e.away_score;
+  return key;
+};
+
+/** Yalnız maçın durumu (oynanmadı / canlı / bitti). Dakika ilerlerken yeniden çizmez. */
+export const useLiveStatus = (): LiveStatus => useLiveMatchStore((s) => s.status);
+
+/**
+ * Canlı puan durumu için anlık skor; maç başlamadıysa `null`. Yalnız gol olunca (ve maç başlayınca / sıfırlanınca)
+ * yeniden çizer. Dakika dakika güncellenmesi gerekmeyen ekranlar (`useLiveMatch` yerine) bunu kullanır: uzun listeli
+ * ekranların her 650 ms'de baştan çizilmesini önler.
+ */
+export function useLiveScore(): LiveScore | null {
+  const key = useLiveMatchStore(selectScoreKey);
+  return useMemo(
+    () => (key < 0 ? null : { home_team_id: liveMatch.home_team_id, away_team_id: liveMatch.away_team_id, home_score: Math.floor(key / 100), away_score: key % 100 }),
+    [key]
+  );
+}
+
+/**
+ * Canlı maçın o anki görünümü. Dakika değiştikçe bileşeni yeniden çizer (650 ms'de bir): yalnız dakikayı ya da
+ * akışı gerçekten gösteren küçük bileşenlerde kullanın; ekran kökünde `useLiveStatus` / `useLiveScore` yeterlidir.
+ */
 export function useLiveMatch(): LiveMatchView {
   const status = useLiveMatchStore((s) => s.status);
   const minute = useLiveMatchStore((s) => s.minute);

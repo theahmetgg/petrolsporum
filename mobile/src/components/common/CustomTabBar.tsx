@@ -1,3 +1,4 @@
+import { hapticSelect } from "@/lib/haptics";
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { View } from "react-native";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
@@ -179,6 +180,8 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
     (routeKey: string) => {
       const route = routesRef.current.find((r) => r.key === routeKey);
       if (!navigation || !route?.key) return;
+      // Başka sekmeye geçişte hafif titreşim (aynı sekmeye yeniden basınca yok)
+      if (routeKey !== activeKeyRef.current) hapticSelect();
       const go = () => {
         const e = navigation.emit({ type: "tabPress", target: route.key, canPreventDefault: true });
         if (!e.defaultPrevented && route.name) navigation.navigate(route.name, route.params);

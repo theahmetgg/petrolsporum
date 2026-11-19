@@ -2,11 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { ViewTransition, useMemo, useRef, useState } from "react";
 import type { Product, ProductCategory } from "@/types";
 import { CATEGORY_COVERS, PRODUCT_FILTERS, STORE_PAGE_SIZE, matchesFilter, type ProductFilter } from "@/mocks/store";
 import { discountPercent, formatPrice } from "@/utils/format";
 import { STAGE, productImage } from "./storeShared";
+
+/**
+ * Ürün geçişi: karttaki sahne ile ürün sayfasındaki büyük sahne aynı adı taşır; tarayıcı birini ötekine büyüterek
+ * taşır. Bir sayfada aynı ürün iki kez adlandırılamaz (geçiş bozulur); bu yüzden yalnız ürünün sayfada tek geçtiği
+ * listelerde açılır (`enabled`): mağaza ızgarası, ana sayfa rafı, benzer ürünler. Fırsatlar şeridinde kapalıdır,
+ * çünkü aynı ürün aşağıdaki ızgarada da vardır.
+ */
+export function ProductMorph({ id, enabled = true, children }: { id: string; enabled?: boolean; children: React.ReactNode }) {
+  if (!enabled) return <>{children}</>;
+  return (
+    <ViewTransition name={`product-${id}`} share="morph" default="none">
+      {children}
+    </ViewTransition>
+  );
+}
 
 /** Ürün rozeti: "YENİ" ya da indirim oranı */
 export function ProductBadge({ product }: { product: Product }) {
@@ -33,18 +48,19 @@ export function ProductPrice({ product, large = false }: { product: Product; lar
 /**
  * Ürün kartı: sahne zemininde şeffaf ürün fotoğrafı, sol üstte rozet, altında kategori, ad ve fiyat. Üstüne gelince
  * kart hafifçe yükselir, ürün büyür ve "İncele" çıkar. Fotoğraf ekrandaki boyuta göre küçültülür ve görünür olunca
- * yüklenir (next/image).
+ * yüklenir (next/image). Kartlar ekranın altında başladığı için hiçbiri önceden yüklenmez; `sizes` sayfanın en çok
+ * 1152 px olduğunu söyler (geniş ekranda gereğinden büyük fotoğraf istenmesin).
  */
-export function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
+export function ProductCard({ product, morph = false }: { product: Product; morph?: boolean }) {
   return (
     <Link href={`/magaza/${product.id}`} className="group block">
+      <ProductMorph id={product.id} enabled={morph}>
       <div className={`relative aspect-square overflow-hidden rounded-box ${STAGE} transition-transform duration-300 group-hover:-translate-y-1`}>
         <Image
           src={productImage(product.image)}
           alt=""
           fill
-          priority={priority}
-          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+          sizes="(min-width: 1152px) 266px, (min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
           className="object-contain p-3 drop-shadow-xl transition-transform duration-300 group-hover:scale-[1.07]"
         />
         <div className="absolute left-3 top-3">
@@ -54,6 +70,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
           İncele
         </span>
       </div>
+      </ProductMorph>
       <div className="mt-3 px-1">
         <p className="text-[11px] font-medium tracking-wide text-ink-muted">{product.category.toLocaleUpperCase("tr-TR")}</p>
         <h3 className="mt-0.5 line-clamp-2 min-h-10 text-sm font-medium">{product.name}</h3>
@@ -98,7 +115,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
                   src={productImage(CATEGORY_COVERS[category] ?? "p1")}
                   alt=""
                   fill
-                  sizes="(min-width: 768px) 25vw, 50vw"
+                  sizes="(min-width: 1152px) 270px, (min-width: 768px) 25vw, 50vw"
                   className="object-contain px-4 pb-16 pt-4 drop-shadow-xl transition-transform duration-300 group-hover:scale-[1.06]"
                 />
                 <span className="absolute inset-x-4 bottom-4">
@@ -133,9 +150,9 @@ export function ProductGrid({ products }: { products: Product[] }) {
         </div>
 
         <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
-          {shown.map((product, i) => (
+          {shown.map((product) => (
             <li key={product.id}>
-              <ProductCard product={product} priority={i < 4} />
+              <ProductCard product={product} morph />
             </li>
           ))}
         </ul>

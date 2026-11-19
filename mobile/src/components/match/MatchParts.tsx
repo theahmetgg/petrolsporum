@@ -99,11 +99,15 @@ export const StatBar = memo(function StatBar({ stat }: { stat: MatchStat }) {
 /* ───────────── Kadro listesi ───────────── */
 
 /** Oyuncu satırı: forma numarası dairesi, ad, mevki · yaş · ülke; sağda bu sezonki maç sayısı. */
-export const PlayerRow = memo(function PlayerRow({ player, trailing }: { player: Player; trailing?: React.ReactNode }) {
+/**
+ * Kadro satırı. `onPress` verilirse satır basılabilir olur (oyuncu sayfası). İşleyici oyuncuyu parametre alır:
+ * çağıran taraf modül düzeyinde tek bir sabit fonksiyon verebilir, `memo` bozulmaz.
+ */
+export const PlayerRow = memo(function PlayerRow({ player, trailing, onPress }: { player: Player; trailing?: React.ReactNode; onPress?: (player: Player) => void }) {
   const colors = useColors();
   const meta = [player.position, player.age ? `${player.age} yaş` : null, player.nationality].filter(Boolean).join(" · ");
   return (
-    <Surface>
+    <Surface onPress={onPress ? () => onPress(player) : undefined} accessibilityLabel={onPress ? `${player.full_name ?? player.name}, ${player.position}, oyuncu sayfası` : undefined}>
       <View style={{ width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center", backgroundColor: colors.mono.fillStrong }}>
         <Text allowFontScaling={false} style={{ fontFamily: HeadingFonts.bold, fontSize: 20, color: colors.ink.DEFAULT }}>
           {player.shirt_number}

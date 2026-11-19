@@ -1,3 +1,4 @@
+import { CountUp } from "@/components/ui/MotionViews";
 import React, { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { router } from "expo-router";
@@ -98,8 +99,8 @@ export default function CockpitScreen() {
           <>
             <View style={{ paddingHorizontal: spacing.screen, marginTop: 20, gap: spacing.boxGap }}>
               <View style={{ flexDirection: "row", gap: spacing.boxGap }}>
-                <Tile label="Mağaza geliri" value={formatCompactTL(data.store_revenue)} note="Aracı komisyonu yok" />
-                <Tile label="Anıt duvarı geliri" value={formatCompactTL(data.brick_revenue)} note={`${formatNumber(data.bricks_sold)} tuğla`} />
+                <CountUp value={data.store_revenue}>{(n) => <Tile label="Mağaza geliri" value={formatCompactTL(n)} note="Aracı komisyonu yok" />}</CountUp>
+                <CountUp value={data.brick_revenue}>{(n) => <Tile label="Anıt duvarı geliri" value={formatCompactTL(n)} note={`${formatNumber(data.bricks_sold)} tuğla`} />}</CountUp>
               </View>
             </View>
 

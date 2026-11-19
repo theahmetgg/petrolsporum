@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHero } from "~/components/cards";
 import { Container } from "~/components/site";
 import { HEAD_COACH, LINE_LABELS, PLAYERS } from "@/mocks/players";
@@ -8,12 +9,15 @@ export const metadata: Metadata = { title: "Kadro", description: "Batman Petrols
 
 const LINES: PlayerLine[] = ["GK", "DEF", "MID", "FWD"];
 
-/** Kadro: hatlara göre oyuncu kartları. Oyuncu fotoğrafı yoktur (görsel hakları); iri forma numarası kullanılır. */
+/**
+ * Kadro: hatlara göre oyuncu kartları. Oyuncu fotoğrafı yoktur (görsel hakları); iri forma numarası kullanılır.
+ * Her kart oyuncunun sayfasına götürür (`/kadro/[id]`).
+ */
 export default function SquadPage() {
   return (
     <>
       <PageHero title="Kadro" text={`2026-27 sezonu A takımı · Teknik direktör: ${HEAD_COACH.name}`} />
-      <Container className="mt-10 space-y-12">
+      <Container className="reveal mt-10 space-y-12">
         {LINES.map((line) => {
           const players = PLAYERS.filter((p) => p.line === line).sort((a, b) => a.shirt_number - b.shirt_number);
           return (
@@ -23,7 +27,8 @@ export default function SquadPage() {
               </h2>
               <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                 {players.map((player) => (
-                  <li key={player.id} className="relative overflow-hidden rounded-box bg-mono-fill p-5">
+                  <li key={player.id}>
+                    <Link href={`/kadro/${player.id}`} className="group relative block h-full overflow-hidden rounded-box bg-mono-fill p-5 transition-transform duration-300 hover:-translate-y-1">
                     <span aria-hidden className="heading pointer-events-none absolute -right-1 -top-3 text-8xl text-surface-muted">
                       {player.shirt_number}
                     </span>
@@ -36,6 +41,7 @@ export default function SquadPage() {
                     <p className="relative mt-1 text-xs text-ink-muted">
                       {player.appearances} maç · {player.minutes} dk
                     </p>
+                    </Link>
                   </li>
                 ))}
               </ul>

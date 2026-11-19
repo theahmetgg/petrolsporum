@@ -81,6 +81,20 @@ export const countdownParts = (iso: string, now: number = Date.now()) => {
 
 export const pad2 = (n: number) => String(n).padStart(2, "0");
 
+/** Başlama saatinden `minutes` dakika önceki saat ("13:30", 120 → "11:30"); gece yarısını geriye doğru sarar */
+export const timeBefore = (kickoffAt: string, minutes: number) => {
+  const [hours, mins] = formatTime(kickoffAt).split(":").map(Number);
+  const total = (((hours * 60 + mins - minutes) % 1440) + 1440) % 1440;
+  return `${pad2(Math.floor(total / 60))}:${pad2(total % 60)}`;
+};
+
+/** "2 saat önce", "45 dk önce", 0 → "Maç saati" (saati açıklanmamış maçta akış göreli yazılır) */
+export const relativeBefore = (minutes: number) => {
+  if (minutes === 0) return "Maç saati";
+  if (minutes % 60 === 0) return `${minutes / 60} saat önce`;
+  return `${minutes} dk önce`;
+};
+
 /** 1284 → "1.284" */
 export const formatNumber = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 

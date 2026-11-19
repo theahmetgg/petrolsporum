@@ -1,3 +1,4 @@
+import { hapticSuccess } from "@/lib/haptics";
 import React, { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { router } from "expo-router";
@@ -50,6 +51,7 @@ export default function BuyBrickScreen() {
       showToast("Duvarda boş yer kalmadı.", "error");
       return;
     }
+    hapticSuccess();
     router.replace(`/monument/certificate/${brick.id}`);
   };
 

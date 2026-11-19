@@ -64,12 +64,12 @@ export default function AppPage() {
             </div>
           </div>
           <div className="mx-auto w-full max-w-[280px] translate-y-10 md:translate-y-16">
-            <PhoneFrame src="/app/home.jpg" alt="Uygulama ana sayfası: sıradaki maç, geri sayım ve manşet" priority />
+            <PhoneFrame src="/app/home.jpg" alt="Uygulama ana sayfası: sıradaki maç, geri sayım ve manşet" eager />
           </div>
         </Container>
       </section>
 
-      <Container className="mt-28 space-y-20 md:mt-36">
+      <Container className="reveal mt-28 space-y-20 md:mt-36">
         {FEATURES.map((feature, i) => (
           <section key={feature.title} className="grid items-center gap-8 md:grid-cols-2 md:gap-16">
             <div className={i % 2 ? "md:order-2" : ""}>
@@ -84,7 +84,7 @@ export default function AppPage() {
         ))}
       </Container>
 
-      <Container className="mt-24">
+      <Container className="reveal mt-24">
         <p className="rounded-box bg-mono-fill p-6 text-center text-sm text-ink-secondary">
           Ekran görüntüleri çalışan prototipten alınmıştır. Canlı maç, liderlik ve gelir rakamları demo veridir.
         </p>

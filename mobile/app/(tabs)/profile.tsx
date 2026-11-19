@@ -1,3 +1,4 @@
+import { CountUp } from "@/components/ui/MotionViews";
 import React, { useRef } from "react";
 import { ScrollView, View } from "react-native";
 import { Image } from "expo-image";
@@ -119,7 +120,8 @@ export default function ProfileTab() {
           </LinearGradient>
 
           <View style={{ flexDirection: "row", gap: spacing.boxGap }}>
-            <Stat value={formatNumber(fan.petrol_puan)} label="PetrolPuan" />
+            {/* Puan sayarak gelir; tahmin puanı eklenince eski değerden yenisine sayar */}
+            <CountUp value={fan.petrol_puan}>{(n) => <Stat value={formatNumber(n)} label="PetrolPuan" />}</CountUp>
             <Stat value={myRank ? `${myRank}.` : "—"} label="Sezon sırası" />
             <Stat value={tickets ? `${tickets.length}` : "—"} label="Hatıra bileti" />
           </View>

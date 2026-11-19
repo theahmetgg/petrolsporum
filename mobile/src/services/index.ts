@@ -1,3 +1,5 @@
+import { MATCH_DAY } from "@/mocks/matchday";
+import type { MatchDayInfo } from "@/types";
 import type { CockpitStats, FanPost, LeaderboardRow, Match, MemoryTicket, MonumentBrick, NewsItem, Page, Player, Product, ProductCategory, StandingRow, Wallpaper } from "@/types";
 import { MATCHES } from "@/mocks/matches";
 import { STANDINGS } from "@/mocks/standings";
@@ -24,6 +26,9 @@ export const matchService = {
   get: (id: string): Promise<Match | null> => reply(MATCHES.find((m) => m.id === id) ?? null),
   standings: (): Promise<StandingRow[]> => reply(STANDINGS),
   squad: (): Promise<Player[]> => reply(PLAYERS),
+  player: (id: string): Promise<Player | null> => reply(PLAYERS.find((p) => p.id === id) ?? null),
+  /** Maç günü rehberi; yalnız sıradaki iç saha maçı için vardır, diğer maçlarda `null` */
+  matchDay: (matchId: string): Promise<MatchDayInfo | null> => reply(MATCH_DAY.match_id === matchId ? MATCH_DAY : null),
 };
 
 export const contentService = {

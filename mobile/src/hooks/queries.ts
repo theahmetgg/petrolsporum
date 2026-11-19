@@ -15,6 +15,8 @@ export const useMatches = () => useQuery({ queryKey: ["matches"], queryFn: match
 export const useMatch = (id: string) => useQuery({ queryKey: ["matches", id], queryFn: () => matchService.get(id), enabled: !!id, ...STATIC });
 export const useStandings = () => useQuery({ queryKey: ["standings"], queryFn: matchService.standings, ...STATIC });
 export const useSquad = () => useQuery({ queryKey: ["squad"], queryFn: matchService.squad, ...STATIC });
+export const usePlayer = (id: string) => useQuery({ queryKey: ["squad", id], queryFn: () => matchService.player(id), enabled: !!id, ...STATIC });
+export const useMatchDay = (matchId: string) => useQuery({ queryKey: ["match-day", matchId], queryFn: () => matchService.matchDay(matchId), enabled: !!matchId, ...STATIC });
 
 export const useNews = () => useQuery({ queryKey: ["news"], queryFn: contentService.news, ...STATIC });
 export const useNewsItem = (id: string) => useQuery({ queryKey: ["news", id], queryFn: () => contentService.newsItem(id), enabled: !!id, ...STATIC });

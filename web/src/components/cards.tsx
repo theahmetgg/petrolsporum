@@ -12,7 +12,7 @@ export function NewsCard({ item, large = false }: { item: NewsItem; large?: bool
           src={`/club/${item.image}.jpg`}
           alt=""
           fill
-          sizes={large ? "(min-width: 768px) 60vw, 100vw" : "(min-width: 768px) 33vw, 100vw"}
+          sizes={large ? "(min-width: 1152px) 700px, (min-width: 768px) 60vw, 100vw" : "(min-width: 1152px) 370px, (min-width: 768px) 33vw, 100vw"}
           className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
       </div>
@@ -28,10 +28,10 @@ export function NewsCard({ item, large = false }: { item: NewsItem; large?: bool
 }
 
 /** Telefon çerçevesi içinde uygulama ekran görüntüsü */
-export function PhoneFrame({ src, alt, priority = false }: { src: string; alt: string; priority?: boolean }) {
+export function PhoneFrame({ src, alt, eager = false }: { src: string; alt: string; eager?: boolean }) {
   return (
     <div className="relative mx-auto aspect-[9/19.5] w-full max-w-[260px] overflow-hidden rounded-[2.2rem] border-[6px] border-surface-muted bg-black shadow-2xl">
-      <Image src={src} alt={alt} fill sizes="260px" className="object-cover object-top" priority={priority} />
+      <Image src={src} alt={alt} fill sizes="260px" className="object-cover object-top" loading={eager ? "eager" : "lazy"} fetchPriority={eager ? "high" : "auto"} />
     </div>
   );
 }

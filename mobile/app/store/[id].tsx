@@ -4,11 +4,13 @@ import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { BadgeCheck, ChevronLeft, ShoppingBag } from "lucide-react-native";
 import { Screen } from "@/components/layout/Screen";
-import { AppText, EmptyState, FloatingActionBar, FLOATING_BAR_HEIGHT, Heading, IconButton, ListRowSkeleton, Pill, ScreenHeader, SectionHeader, Surface, useFloatingBarBottom } from "@/components/ui";
-import { ProductBadge, ProductCard, ProductPrice, ProductStage } from "@/components/store/ProductCard";
+import { AppText, EmptyState, FloatingActionBar, FLOATING_BAR_HEIGHT, Heading, IconButton, Pill, ScreenHeader, SectionHeader, Surface, ZoomInView, useFloatingBarBottom } from "@/components/ui";
+import { ProductPageSkeleton } from "@/components/common/Skeletons";
+import { ProductBadge, ProductPrice, ProductRail, ProductStage } from "@/components/store/ProductCard";
 import { useProduct, useRelatedProducts } from "@/hooks/queries";
 import { useNavigationMode } from "@/hooks/useNavigationMode";
 import { storeImage, storeThumb } from "@/mocks/storeImages";
+import type { Product } from "@/types";
 import { discountPercent, formatPrice } from "@/utils/format";
 import { radius, spacing, useColors } from "@/theme";
 
@@ -21,6 +23,8 @@ const RELATED_CARD = 150;
  * akışı buraya bağlanır.
  */
 const placeOrder = () => {};
+/** Benzer ürüne geçiş: sayfa yığına eklenmez, yerine açılır (geri tuşu mağazaya döner) */
+const openRelated = (product: Product) => router.replace(`/store/${product.id}`);
 
 /**
  * Ürün sayfası: kenardan kenara sahne (temaya uyan zemin, arka planı silinmiş ürün; alt köşeleri yuvarlak,
@@ -40,11 +44,8 @@ export default function ProductScreen() {
 
   if (isLoading) {
     return (
-      <Screen>
-        <ScreenHeader title="Mağaza" />
-        <View style={{ paddingHorizontal: spacing.screen }}>
-          <ListRowSkeleton count={4} />
-        </View>
+      <Screen withTopInset={false}>
+        <ProductPageSkeleton width={width} />
       </Screen>
     );
   }
@@ -65,7 +66,10 @@ export default function ProductScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: barBottom + FLOATING_BAR_HEIGHT + 32 }}>
         {/* Kenardan kenara fotoğraf: yüklenene kadar listedeki küçük kopya gösterilir (boş alan görünmez) */}
         <ProductStage style={{ width, paddingTop: insetTop + 36, borderBottomLeftRadius: radius.block, borderBottomRightRadius: radius.block, overflow: "hidden" }}>
-          <Image source={storeImage(product.image)} placeholder={storeThumb(product.image)} placeholderContentFit="contain" style={{ width, height: width }} contentFit="contain" transition={150} accessibilityLabel={product.name} />
+          {/* Fotoğraf hafifçe büyüyerek yerine oturur (yalnız ölçek ve saydamlık; 320 ms) */}
+          <ZoomInView>
+            <Image source={storeImage(product.image)} placeholder={storeThumb(product.image)} placeholderContentFit="contain" style={{ width, height: width }} contentFit="contain" transition={150} accessibilityLabel={product.name} />
+          </ZoomInView>
           <View style={{ position: "absolute", top: insetTop + 8, left: spacing.screen, right: spacing.screen, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <IconButton icon={ChevronLeft} label="Geri" variant="soft" size={40} onPress={() => router.back()} />
             <ProductBadge product={product} />
@@ -129,11 +133,7 @@ export default function ProductScreen() {
         {related?.length ? (
           <View style={{ marginTop: spacing.section }}>
             <SectionHeader title="Benzer ürünler" />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.screen, gap: 12 }}>
-              {related.map((item) => (
-                <ProductCard key={item.id} product={item} width={RELATED_CARD} onPress={(p) => router.replace(`/store/${p.id}`)} />
-              ))}
-            </ScrollView>
+            <ProductRail products={related} cardWidth={RELATED_CARD} onPress={openRelated} />
           </View>
         ) : null}
       </ScrollView>

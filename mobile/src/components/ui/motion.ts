@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Easing, FadeIn, useSharedValue, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
+import { Easing, FadeIn, FadeInDown, useSharedValue, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
 
 /**
  * Ortak hareket ayarları (kullanıcı kararı, 12 Kasım 2026). Hepsi Reanimated ile UI thread'de çalışır;
@@ -29,9 +29,32 @@ export function shrinkBack(value: SharedValue<number>) {
 }
 
 /** Listelerin ilk yüklemesinde sırayla belirecek satır sayısı; sonrakiler animasyonsuz çizilir */
-export const FIRST_LOAD_FADE_COUNT = 4;
+export const FIRST_LOAD_FADE_COUNT = 6;
 
 /** İlk yüklemede `index`. satırın giriş animasyonu (220 ms solma, 50 ms arayla); sınırın dışında `undefined` */
 export function firstLoadEntering(index: number) {
   return index < FIRST_LOAD_FADE_COUNT ? FadeIn.duration(220).delay(index * 50) : undefined;
+}
+
+/**
+ * Ekran bölümünün girişi: 12 dp aşağıdan solarak gelir, bölümler 60 ms arayla sıralanır (en çok 6 bölüm; sonrası
+ * beklemeden gelir). Yalnız saydamlık ve konum değişir.
+ */
+export function sectionEntering(index: number) {
+  return FadeInDown.duration(280)
+    .delay(Math.min(index, FIRST_LOAD_FADE_COUNT) * 60)
+    .easing(MOTION_EASE)
+    .withInitialValues({ opacity: 0, transform: [{ translateY: 12 }] });
+}
+
+/** Büyük görselin girişi (ürün sayfası): %94'ten tam boya büyür ve solarak gelir (320 ms) */
+export function softZoomIn() {
+  "worklet";
+  return {
+    initialValues: { opacity: 0, transform: [{ scale: 0.94 }] },
+    animations: {
+      opacity: withTiming(1, { duration: 240, easing: MOTION_EASE }),
+      transform: [{ scale: withTiming(1, { duration: 320, easing: MOTION_EASE }) }],
+    },
+  };
 }

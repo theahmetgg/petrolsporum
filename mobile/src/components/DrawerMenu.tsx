@@ -47,6 +47,8 @@ const SECTIONS: { title: string; items: DrawerItem[] }[] = [
       { label: "Fikstür", icon: "fixtures", href: { pathname: "/(tabs)/matches", params: { view: "fixtures" } } },
       { label: "Puan Durumu", icon: "standings", href: { pathname: "/(tabs)/matches", params: { view: "standings" } } },
       { label: "Kadro", icon: "squad", href: { pathname: "/(tabs)/matches", params: { view: "squad" } } },
+      { label: "Maç Günü", icon: "checkin", href: "/matchday" },
+      { label: "Bilet ve Kombine", icon: "ticket", href: "/tickets" },
     ],
   },
   {

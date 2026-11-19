@@ -1,14 +1,12 @@
-import React, { memo } from "react";
-import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
+import React, { memo, useCallback } from "react";
+import { FlatList, View, type StyleProp, type ViewStyle } from "react-native";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
-import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
 import type { Product } from "@/types";
 import { AppText, PressableBox } from "@/components/ui";
 import { BOX_PRESS_SCALE } from "@/components/ui/PressableBox";
 import { storeThumb } from "@/mocks/storeImages";
 import { discountPercent, formatPrice } from "@/utils/format";
-import { radius, useColors, useThemeScheme } from "@/theme";
+import { radius, spacing, useColors, useThemeScheme } from "@/theme";
 
 /**
  * Sahne ("vitrin spotu") değerleri, tema başına. Web'deki karşılığı `globals.css` içindeki `.stage` sınıfıdır;
@@ -24,6 +22,32 @@ const STAGE = {
   light: { base: ["#FFFFFF", "#E7E7EB"], glow: "#DE1606", glowPeak: 0.1, sheen: 0, vignette: 0.05, border: "rgba(15,23,42,0.06)" },
 } as const;
 
+/** 0-1 arası görünürlüğü iki haneli onaltılık ek yapar: `#RRGGBB` + ek = `#RRGGBBAA` */
+const alphaHex = (opacity: number) => Math.round(opacity * 255).toString(16).padStart(2, "0");
+
+/**
+ * Sahnenin zemin tanımı (CSS gradyan katmanları, üstten alta): kenar kararması, üst parlama, kızıl ışık, zemin.
+ * Web'deki `.stage` kuralıyla aynı katmanlardır. Renkler `#RRGGBBAA` yazılır: React Native'in doğrusal gradyan
+ * ayrıştırıcısı virgülle böldüğü için `rgba(...)` kullanılamaz.
+ * PERFORMANS: zemin tek bir görünümün kendi arka planı olarak çizilir. Önceki hâli (gradyan görünümü + üç daireli
+ * SVG) her ürün kartına iki ek yerel görünüm ve pahalı bir çizim ekliyordu; mağaza listesinde kaydırmayı takıyordu.
+ */
+const stageBackground = (scheme: keyof typeof STAGE) => {
+  const s = STAGE[scheme];
+  const layers = [
+    `radial-gradient(ellipse 74% 74% at 50% 50%, #00000000 55%, #000000${alphaHex(s.vignette)} 100%)`,
+    s.sheen ? `radial-gradient(ellipse 70% 70% at 50% -8%, #FFFFFF${alphaHex(s.sheen)} 0%, #FFFFFF00 100%)` : null,
+    `radial-gradient(ellipse 46% 46% at 50% 50%, ${s.glow}${alphaHex(s.glowPeak)} 0%, ${s.glow}${alphaHex(s.glowPeak * 0.5)} 45%, ${s.glow}00 100%)`,
+    `linear-gradient(180deg, ${s.base[0]} 0%, ${s.base[1]} 100%)`,
+  ];
+  return layers.filter(Boolean).join(", ");
+};
+/** Tema başına bir kez hesaplanır; her kart aynı stil nesnesini paylaşır */
+const STAGE_STYLE = {
+  dark: { experimental_backgroundImage: stageBackground("dark"), borderWidth: 1, borderColor: STAGE.dark.border },
+  light: { experimental_backgroundImage: stageBackground("light"), borderWidth: 1, borderColor: STAGE.light.border },
+} as const;
+
 /**
  * Ürün zemini ("sahne"): ürün fotoğraflarının arka planı silinmiştir (şeffaf); ürün bu zeminin üstünde durur.
  * Görünüm bir vitrin spotudur (kullanıcı kararı, 19 Kasım 2026: kırmızı ışık olsun, lüks dursun): çok koyu zemin,
@@ -33,32 +57,7 @@ const STAGE = {
  * Kutu kare değilse katmanlar kutuyla birlikte esner.
  */
 export function ProductStage({ children, style }: { children?: React.ReactNode; style?: StyleProp<ViewStyle> }) {
-  const stage = STAGE[useThemeScheme()];
-  return (
-    <LinearGradient colors={[stage.base[0], stage.base[1]]} style={[{ borderWidth: 1, borderColor: stage.border }, style]}>
-      <Svg style={StyleSheet.absoluteFill} viewBox="0 0 100 100" preserveAspectRatio="none" pointerEvents="none">
-        <Defs>
-          <RadialGradient id="stageGlow" cx="50" cy="50" r="46" gradientUnits="userSpaceOnUse">
-            <Stop offset="0" stopColor={stage.glow} stopOpacity={stage.glowPeak} />
-            <Stop offset="0.45" stopColor={stage.glow} stopOpacity={stage.glowPeak * 0.5} />
-            <Stop offset="1" stopColor={stage.glow} stopOpacity={0} />
-          </RadialGradient>
-          <RadialGradient id="stageSheen" cx="50" cy="-8" r="70" gradientUnits="userSpaceOnUse">
-            <Stop offset="0" stopColor="#FFFFFF" stopOpacity={stage.sheen} />
-            <Stop offset="1" stopColor="#FFFFFF" stopOpacity={0} />
-          </RadialGradient>
-          <RadialGradient id="stageVignette" cx="50" cy="50" r="74" gradientUnits="userSpaceOnUse">
-            <Stop offset="0.55" stopColor="#000000" stopOpacity={0} />
-            <Stop offset="1" stopColor="#000000" stopOpacity={stage.vignette} />
-          </RadialGradient>
-        </Defs>
-        <Rect width="100" height="100" fill="url(#stageGlow)" />
-        <Rect width="100" height="100" fill="url(#stageSheen)" />
-        <Rect width="100" height="100" fill="url(#stageVignette)" />
-      </Svg>
-      {children}
-    </LinearGradient>
-  );
+  return <View style={[STAGE_STYLE[useThemeScheme()], style]}>{children}</View>;
 }
 
 /** Ürün rozeti: "YENİ" (nötr dolu) ya da indirim oranı (kırmızı dolu) */
@@ -129,5 +128,30 @@ export const ProductCard = memo(function ProductCard({ product, width, onPress }
         <ProductPrice product={product} />
       </View>
     </PressableBox>
+  );
+});
+
+const RAIL_CONTENT = { paddingHorizontal: spacing.screen, gap: 12 } as const;
+const railKey = (item: Product) => item.id;
+
+/**
+ * Yatay ürün rafı (fırsatlar, benzer ürünler, ana sayfadaki mağaza rafı). Sanal listedir: açılışta yalnız ekrana
+ * sığan ilk üç kart çizilir, kalanlar kaydırdıkça gelir. Önceki hâli raftaki bütün kartları (10'a kadar) ekran
+ * açılırken çiziyordu. `onPress` sabit bir fonksiyon olmalı (her çizimde yenisi verilirse kartlar baştan çizilir).
+ */
+export const ProductRail = memo(function ProductRail({ products, cardWidth, onPress }: { products: Product[]; cardWidth: number; onPress: (product: Product) => void }) {
+  const renderItem = useCallback(({ item }: { item: Product }) => <ProductCard product={item} width={cardWidth} onPress={onPress} />, [cardWidth, onPress]);
+  return (
+    <FlatList
+      horizontal
+      data={products}
+      keyExtractor={railKey}
+      renderItem={renderItem}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={RAIL_CONTENT}
+      initialNumToRender={3}
+      maxToRenderPerBatch={3}
+      windowSize={3}
+    />
   );
 });

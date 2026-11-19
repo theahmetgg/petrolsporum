@@ -1,3 +1,4 @@
+import { ViewTransition } from "react";
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Poppins } from "next/font/google";
 import Script from "next/script";
@@ -25,7 +26,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // suppressHydrationWarning: açılış betiği `data-theme` özniteliğini sayfa çizilmeden önce yazar
-    <html lang="tr" className={`${poppins.variable} ${barlow.variable} antialiased`} suppressHydrationWarning>
+    <html lang="tr" data-scroll-behavior="smooth" className={`${poppins.variable} ${barlow.variable} antialiased`} suppressHydrationWarning>
       <body className="flex min-h-dvh flex-col">
         {/* Saklı tema seçimi sayfa etkileşime girmeden önce uygulanır (açık temada koyu zemin parlaması olmaz) */}
         <Script id="theme-init" strategy="beforeInteractive">
@@ -36,7 +37,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <SiteHeader />
         <main id="icerik" className="flex-1">
-          {children}
+          {/* Sayfa değişince içerik kısa bir çapraz solmayla gelir; üst bar ve alt bilgi yerinde kalır */}
+          <ViewTransition>{children}</ViewTransition>
         </main>
         <SiteFooter />
       </body>

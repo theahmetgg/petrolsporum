@@ -14,6 +14,7 @@ import { useLiveMatch } from "@/stores/liveMatchStore";
 import { PREDICTION_POINTS, scorePrediction, usePredictionStore } from "@/stores/predictionStore";
 import { useSessionStore } from "@/stores/sessionStore";
 import { showToast } from "@/stores/toastStore";
+import { hapticSuccess } from "@/lib/haptics";
 import { formatMatchDay, formatTime } from "@/utils/format";
 import { spacing, useColors } from "@/theme";
 
@@ -112,6 +113,7 @@ export default function PredictionScreen() {
 
   const submit = () => {
     save({ match_id: LIVE_MATCH_ID, home_score: home, away_score: away, first_scorer_id: scorerId });
+    hapticSuccess();
     showToast("Tahminin kaydedildi.", "success");
   };
 

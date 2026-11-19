@@ -1,3 +1,5 @@
+import { ColorIconBox } from "@/components/ui/ColorIcon";
+import { PopOnChange } from "@/components/ui/MotionViews";
 import React, { useMemo, useState } from "react";
 import { Linking, ScrollView, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
@@ -22,7 +24,6 @@ import { spacing, useColors } from "@/theme";
 type Tab = "flow" | "lineup" | "stats" | "table";
 
 /** Resmi bilet satış sitesi (uygulama içinde bilet satılmaz; Ar-Ge belgesi 9.4) */
-const TICKET_URL = "https://www.passo.com.tr";
 
 /** Skor tablosundaki takım sütunu */
 function TeamColumn({ teamId }: { teamId: string }) {
@@ -95,9 +96,11 @@ export default function MatchDetailScreen() {
             <TeamColumn teamId={match.home_team_id} />
             <View style={{ alignItems: "center", minWidth: 110, gap: 6 }}>
               {homeScore != null && awayScore != null ? (
-                <Heading size="score" color={colors.ink.inverse} style={{ fontVariant: ["tabular-nums"] }} accessibilityLabel={`Skor ${homeScore} ${awayScore}`}>
-                  {`${homeScore} - ${awayScore}`}
-                </Heading>
+                <PopOnChange trigger={`${homeScore}-${awayScore}`}>
+                  <Heading size="score" color={colors.ink.inverse} style={{ fontVariant: ["tabular-nums"] }} accessibilityLabel={`Skor ${homeScore} ${awayScore}`}>
+                    {`${homeScore} - ${awayScore}`}
+                  </Heading>
+                </PopOnChange>
               ) : (
                 <Heading size="display" color={colors.ink.inverse}>
                   {match.time_tbd ? "—:—" : formatTime(match.kickoff_at)}
@@ -157,16 +160,30 @@ export default function MatchDetailScreen() {
                 <EventRow key={event.id} event={event} />
               ))}
               {live.status === "idle" && isHome ? (
-                <Surface onPress={() => Linking.openURL(TICKET_URL).catch(() => showToast("Bağlantı açılamadı.", "error"))} chevron>
-                  <View style={{ flex: 1 }}>
-                    <AppText variant="small" weight="medium">
-                      Bilet
-                    </AppText>
-                    <AppText variant="caption" tone="muted">
-                      Biletler resmi satış sitesinden alınır. Uygulamada bilet satılmaz.
-                    </AppText>
-                  </View>
-                </Surface>
+                <>
+                  <Surface onPress={() => router.push("/matchday")} chevron>
+                    <ColorIconBox name="checkin" size={44} />
+                    <View style={{ flex: 1 }}>
+                      <AppText variant="small" weight="medium">
+                        Maç günü rehberi
+                      </AppText>
+                      <AppText variant="caption" tone="muted">
+                        Kapı saatleri, yol tarifi, hava durumu.
+                      </AppText>
+                    </View>
+                  </Surface>
+                  <Surface onPress={() => router.push("/tickets")} chevron>
+                    <ColorIconBox name="ticket" size={44} />
+                    <View style={{ flex: 1 }}>
+                      <AppText variant="small" weight="medium">
+                        Bilet ve kombine
+                      </AppText>
+                      <AppText variant="caption" tone="muted">
+                        Biletler resmi satış sitesinden alınır. Uygulamada bilet satılmaz.
+                      </AppText>
+                    </View>
+                  </Surface>
+                </>
               ) : null}
             </>
           ) : null}

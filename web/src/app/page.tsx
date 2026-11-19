@@ -34,7 +34,7 @@ export default function HomePage() {
       {/* Açılış: tam genişlik maç fotoğrafı, üstünde slogan ve sıradaki maç */}
       {/* data-theme="dark": fotoğraflı açılış her temada koyudur; yazılar fotoğraf üstünde beyaz kalır */}
       <section data-theme="dark" className="relative isolate overflow-hidden bg-surface-bg text-ink">
-        <Image src="/club/news-manisa.jpg" alt="" fill priority sizes="100vw" className="-z-20 object-cover object-top" />
+        <Image src="/club/news-manisa.jpg" alt="" fill loading="eager" fetchPriority="high" sizes="100vw" className="-z-20 object-cover object-top" />
         <div className="scrim-bottom absolute inset-0 -z-10" />
         <Container className="grid items-end gap-10 pb-12 pt-24 md:grid-cols-[1.15fr_1fr] md:pb-16 md:pt-40">
           <div>
@@ -56,12 +56,20 @@ export default function HomePage() {
             <div>
               <p className="heading mb-3 text-xl">Sıradaki maç</p>
               <NextMatchCard match={nextMatch} />
+              <div className="mt-3 flex flex-wrap gap-3">
+                <Link href="/mac-gunu" className="rounded-full bg-mono-fillStrong px-5 py-2.5 text-sm font-semibold text-ink hover:bg-surface-sunken">
+                  Maç günü rehberi
+                </Link>
+                <Link href="/mac-gunu#bilet" className="rounded-full bg-mono-fillStrong px-5 py-2.5 text-sm font-semibold text-ink hover:bg-surface-sunken">
+                  Bilet al
+                </Link>
+              </div>
             </div>
           ) : null}
         </Container>
       </section>
 
-      <Container className="mt-12">
+      <Container className="reveal mt-12">
         <SectionTitle title="Son maçlar" href="/maclar" linkLabel="Tüm fikstür" />
         <ul className="flex flex-wrap gap-3">
           {lastResults.map((match) => (
@@ -70,7 +78,7 @@ export default function HomePage() {
         </ul>
       </Container>
 
-      <Container className="mt-16">
+      <Container className="reveal mt-16">
         <SectionTitle title="Haberler" href="/haberler" />
         <div className="grid gap-4 md:grid-cols-[1.5fr_1fr]">
           <NewsCard item={headline} large />
@@ -82,7 +90,7 @@ export default function HomePage() {
         </div>
       </Container>
 
-      <Container className="mt-16 grid gap-10 md:grid-cols-[1fr_1.1fr]">
+      <Container className="reveal mt-16 grid gap-10 md:grid-cols-[1fr_1.1fr]">
         <div className="min-w-0">
           <SectionTitle title="Puan durumu" href="/maclar#puan-durumu" linkLabel="Tam tablo" />
           <StandingsTable rows={ranked} limit={8} />
@@ -110,21 +118,21 @@ export default function HomePage() {
         </div>
       </Container>
 
-      <Container className="mt-16">
+      <Container className="reveal mt-16">
         <SectionTitle title="Mağaza" href="/magaza" linkLabel="Tüm ürünler" />
         <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4">
           {PRODUCTS.filter((p) => p.is_new)
             .slice(0, 4)
             .map((product) => (
               <li key={product.id}>
-                <ProductCard product={product} />
+                <ProductCard product={product} morph />
               </li>
             ))}
         </ul>
       </Container>
 
       {/* Uygulama tanıtımı */}
-      <Container className="mt-20">
+      <Container className="reveal mt-20">
         <div className="grid items-center gap-10 rounded-hero bg-mono-fill p-7 md:grid-cols-[1.1fr_1fr] md:p-12">
           <div>
             <p className="heading text-lg text-brand-strong">Taraftar uygulaması</p>

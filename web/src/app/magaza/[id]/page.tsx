@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ProductBadge, ProductCard, ProductOrder, ProductPrice } from "~/components/store";
+import { ProductBadge, ProductCard, ProductMorph, ProductOrder, ProductPrice } from "~/components/store";
 import { STAGE, productImage } from "~/components/storeShared";
 import { Container, SectionTitle } from "~/components/site";
 import { PRODUCTS } from "@/mocks/store";
@@ -31,7 +31,7 @@ export default async function ProductPage({ params }: PageProps<"/magaza/[id]">)
   const onSale = product.old_price != null;
 
   return (
-    <Container className="mt-8">
+    <Container className="reveal mt-8">
       <nav aria-label="Sayfa yolu" className="text-sm text-ink-secondary">
         <Link href="/magaza" className="font-medium hover:text-ink">
           Mağaza
@@ -41,12 +41,14 @@ export default async function ProductPage({ params }: PageProps<"/magaza/[id]">)
       </nav>
 
       <div className="mt-6 grid gap-8 md:grid-cols-[1.1fr_1fr] md:gap-14">
+        <ProductMorph id={product.id}>
         <div className={`relative aspect-square overflow-hidden rounded-hero ${STAGE}`}>
-          <Image src={productImage(product.image)} alt={product.name} fill priority sizes="(min-width: 768px) 55vw, 100vw" className="object-contain p-6 drop-shadow-2xl md:p-10" />
+          <Image src={productImage(product.image)} alt={product.name} fill loading="eager" fetchPriority="high" sizes="(min-width: 1152px) 553px, (min-width: 768px) 55vw, 100vw" className="object-contain p-6 drop-shadow-2xl md:p-10" />
           <div className="absolute left-5 top-5">
             <ProductBadge product={product} />
           </div>
         </div>
+        </ProductMorph>
 
         <div className="md:sticky md:top-28 md:self-start md:py-4">
           <p className="text-xs font-medium tracking-wide text-brand-strong">{product.category.toLocaleUpperCase("tr-TR")}</p>
@@ -83,7 +85,7 @@ export default async function ProductPage({ params }: PageProps<"/magaza/[id]">)
           <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4">
             {related.map((item) => (
               <li key={item.id}>
-                <ProductCard product={item} />
+                <ProductCard product={item} morph />
               </li>
             ))}
           </ul>

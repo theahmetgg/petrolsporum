@@ -24,6 +24,9 @@ export default function TabLayout() {
           headerShown: false,
           // Görünmeyen sekmeler dondurulur: arka plandaki durum değişiklikleri onları yeniden çizdirmez
           freezeOnBlur: true,
+          // Sekme değişince içerik kısa bir solmayla gelir (140 ms; yalnız saydamlık)
+          animation: "fade",
+          transitionSpec: { animation: "timing", config: { duration: 140 } },
           sceneStyle: { backgroundColor: colors.surface.bg },
         }}
       >

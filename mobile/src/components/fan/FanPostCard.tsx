@@ -1,3 +1,5 @@
+import { PopOnChange } from "@/components/ui/MotionViews";
+import { hapticLight } from "@/lib/haptics";
 import React, { memo } from "react";
 import { View } from "react-native";
 import { Image } from "expo-image";
@@ -53,14 +55,19 @@ export const FanPostCard = memo(function FanPostCard({ post, onOpenComments, com
 
       <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
         <PressableBox
-          onPress={() => toggleLike(post.id)}
+          onPress={() => {
+            if (!liked) hapticLight();
+            toggleLike(post.id);
+          }}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityState={{ selected: liked }}
           accessibilityLabel={liked ? "Beğeniyi geri al" : "Beğen"}
           style={() => ({ flexDirection: "row", alignItems: "center", gap: 6, minHeight: 32 })}
         >
-          <Heart size={20} color={liked ? colors.media.like : colors.ink.secondary} fill={liked ? colors.media.like : "transparent"} strokeWidth={1.5} />
+          <PopOnChange trigger={liked ? 1 : 0} peak={1.3}>
+            <Heart size={20} color={liked ? colors.media.like : colors.ink.secondary} fill={liked ? colors.media.like : "transparent"} strokeWidth={1.5} />
+          </PopOnChange>
           <AppText variant="small" tone="secondary" style={{ fontVariant: ["tabular-nums"] }}>
             {likeCount}
           </AppText>

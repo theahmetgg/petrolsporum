@@ -427,6 +427,8 @@ petrolspor/
 * [ ] Taraftar grubunun adı ("Yarasalar").
 * [ ] Sezonluk iç saha maç sayısı ("14" olarak geçiyor).
 * [ ] Kulübün SMS gönderip göndermediği ve yıllık gideri.
+* [ ] Bilet ve kombine satış kanalı. Uygulamada Passo / Passolig varsayıldı (`mocks/matchday.ts`); kulübün kullandığı kanal ve adımlar doğrulanmalı.
+* [ ] Maç günü kapı açılış saati ve stada alınmayan eşyalar (uygulamadaki akış örnektir).
 
 ---
 
@@ -585,6 +587,21 @@ petrolspor/
 * **Alt menü (karar, 18 Kasım 2026):** Ana Sayfa · Maçlar · Oyna · Galeri · Profil. Biçim: sabit çubuk (8.4).
 * **Tema (karar, 18 Kasım 2026; güncelleme 19 Kasım 2026):** Varsayılan koyu temadır. Açık tema da eklendi: mobilde Profil > Görünüm (Sistem / Açık / Koyu), web'de üst bardaki güneş / ay düğmesi. Seçim cihazda saklanır. Fotoğraflı açılışlar (mobil karşılama, web ana sayfa üstü) ve anıt duvarı paneli her temada koyu kalır.
 * **Yan menü (19 Kasım 2026):** Batman360'taki sol menü kalıbı Petrolspor tasarımıyla eklendi. Sekmelerin sol üstündeki düğmeyle açılır. Üstte kırmızı gradyanlı taraftar bloğu (arma, ad, kart no, PetrolPuan, sezon sırası); altında Maç / Oyna / Taraftar / Kulüp bölümleri; en altta sabit görünüm seçimi (Koyu / Açık / Sistem) ve çıkış. Alt menü (5 sekme) aynen duruyor.
+* **Performans kuralları (19 Kasım 2026, ölçülerek konuldu):**
+  * **Canlı maç verisi:** Dakika 650 ms'de bir ilerler. Ekranın kökü dakikayı dinlemez; yalnız durumu (`useLiveStatus`) ya da skoru (`useLiveScore`) dinler. Dakikayı yalnız onu gösteren küçük parça (`useLiveMatch`) izler. Ölçüm (geliştirme kipi, 13 sn canlı maç): Maçlar sekmesi 8108 ms → 411 ms, Ana Sayfa 4314 ms → 303 ms boşa çizim.
+  * **Saniyede bir değişen parçalar** (geri sayım) kendi küçük bileşeninde durur; kartın tamamı her saniye çizilmez.
+  * **Ürün zemini** tek görünümün kendi arka planıdır (`experimental_backgroundImage`); karta ek görünüm ya da SVG konmaz. Mağazada kaydırırken takılan kare oranı %47'den %8-13'e indi (emülatör; basit ekranların tabanı %4-11).
+  * **Listeler:** Uzun ya da yatay ürün listeleri sanal listedir (`FlatList`, `ProductRail`); listeye verilen başlık, stil ve işleyiciler sabittir (`useMemo` / `useCallback` / modül sabiti). `memo`'lu karta her çizimde yeni fonksiyon verilmez.
+  * **Web:** Yalnız sayfanın en üstteki büyük görseli hemen yüklenir (`loading="eager"`, `fetchPriority="high"`; Next.js 16'da `priority` kullanılmaz). Ekranın altındaki görseller ve gizli logo önceden yüklenmez (mağazada 8 → 2). `sizes`, sayfanın en çok 1152 px olduğunu belirtir.
+* **Taraftar özellikleri (19 Kasım 2026):** Üç eksik tamamlandı; mobilde ekran, web'de sayfa olarak.
+  * **Oyuncu sayfası** (mobil `/player/[id]`, web `/kadro/[id]`): iri forma numarası, ad, mevki, yaş, uyruk; bu sezon maç / ilk 11 / dakika; sezon performansı (takım içi süre sırası, ilk 11 oranı, maç başına süre); aynı hattaki oyuncular. Kadro listesinden açılır. **Veri sınırı:** kaynakta gol, asist ve kart yok; uydurulmadı, sunucu bağlanınca eklenir. Oyuncu fotoğrafı yok (görsel hakları).
+  * **Maç Günü** (mobil `/matchday`, web `/mac-gunu`): sıradaki iç saha maçı için günün akışı (kapı açılışı → başlama vuruşu), stada yol tarifi (harita uygulamasını açar), hava durumu, "ilk 11 açıklanınca haber ver" tercihi, yanında bulunması gerekenler. Girişler: ana sayfada maç kartının altı, maç ekranı, yan menü. **Demo sınırları:** akış saatleri örnektir, hava durumu demo veridir, bildirim tercihi kaydedilir ama gönderim Faz 2'dedir (ekranlarda da böyle yazıyor).
+  * **Bilet ve Kombine** (mobil `/tickets`, web'de Maç Günü sayfasının "Bilet" bölümü): uygulamada / sitede bilet satılmaz, taraftar resmi satış sitesine yönlendirilir; sıradaki iç saha maçı, kombine açıklaması ve dört adımlık "nasıl alınır". Fiyat yazılmadı (kaynak yok). Veri tek dosyada: `mobile/src/mocks/matchday.ts`.
+* **Hareket ve animasyon (karar, 19 Kasım 2026):** Amaç lüks ve akıcı his; gösteriş değil. Kurallar: yalnız saydamlık ve konum / ölçek değişir, süreler 140-400 ms, sürekli dönen / parlayan süs yok, sistemdeki "hareketi azalt" ayarına uyulur.
+  * **Mobil:** Ekrana özel yüklenme iskeletleri (ürün kartı, ürün sayfası, vitrin kartı, manşet; `Skeletons.tsx`). İlk açılışta üstteki bölümler ve listenin ilk altı öğesi sırayla belirir (`Reveal`, `FirstLoadFade`). Ürün sayfasında fotoğraf hafifçe büyüyerek gelir. Gol olunca skor zıplar (`PopOnChange`); PetrolPuan ve kokpit gelirleri sayarak gelir (`CountUp`). Sekme değişince içerik 140 ms solar. Titreşim yalnız dört yerde: sekme değişimi, tahmin kaydı, tuğla alımı, beğeni (`lib/haptics.ts`).
+  * **Web:** Bölümler kaydırınca aşağıdan solarak belirir (`.reveal`, yalnız CSS). Sayfa değişince içerik çapraz solar; mağaza kartındaki ürün, ürün sayfasındaki büyük fotoğrafa büyüyerek taşınır (React `ViewTransition`). Vitrindeki forma çok yavaş süzülür. Desteklemeyen tarayıcıda (ör. Firefox'ta kaydırma belirişi) içerik animasyonsuz, eksiksiz görünür.
+  * **Ölçüm:** Animasyonlardan sonra mağazada kaydırma takılması aynı kaldı (%11-14); ekran boştayken hiç kare çizilmiyor (5 sn'de 0). Uzun listede her satır animasyon katmanıyla sarılmaz, yalnız ilk altı öğe sarılır.
+  * **Bilerek yapılmayanlar:** Kaydırmaya bağlı derinlik efekti, 400 ms'den uzun geçişler, her satıra animasyon; mobilde karttan sayfaya ortak fotoğraf geçişi (kitaplıkta henüz deneysel).
 * **İkonlar (karar, 18 Kasım 2026):** Petrolspor renkleriyle gradyanlı tek ikon seti; çok renkli ikon yok.
 * **Taraftar duvarının yeri (öneri):** Ana sayfada bir bölüm; "Tümü" ile tam liste ekranı açılır. Ayrı sekme açılmaz.
 * **Veri:** Tüm ekranlar aynı sahte veri klasöründen okur; alan adları Bölüm 6'daki tablolarla aynı tutulur.

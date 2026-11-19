@@ -253,3 +253,36 @@ export interface CockpitStats {
   top_products: { name: string; sold: number; revenue: number }[];
   weekly_active: { label: string; value: number }[];
 }
+
+/* ───────────── Maç günü ve bilet ───────────── */
+
+/** Maç günü akışındaki bir adım; saat, başlama saatinden `minutes_before` dakika öncesidir (0 = başlama vuruşu) */
+export interface MatchDayStep {
+  key: string;
+  label: string;
+  minutes_before: number;
+  note?: string;
+}
+
+export interface MatchDayWeather {
+  temp_c: number;
+  condition: string;
+  /** Yağış olasılığı, yüzde */
+  rain_chance: number;
+  wind_kmh: number;
+}
+
+/** Maç günü rehberi: stadyum, akış, hava ve yanında bulunması gerekenler */
+export interface MatchDayInfo {
+  match_id: string;
+  stadium: { name: string; city: string; maps_query: string };
+  steps: MatchDayStep[];
+  weather: MatchDayWeather;
+  entry_tips: string[];
+}
+
+/** Bilet alma adımı */
+export interface TicketStep {
+  title: string;
+  text: string;
+}

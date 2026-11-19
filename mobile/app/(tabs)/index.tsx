@@ -4,7 +4,8 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { Bell } from "lucide-react-native";
 import { Screen } from "@/components/layout/Screen";
-import { AppText, Button, ColorIconBox, IconButton, ListRowSkeleton, SectionHeader, Surface } from "@/components/ui";
+import { AppText, Button, ColorIconBox, IconButton, ListRowSkeleton, Reveal, SectionHeader, Surface } from "@/components/ui";
+import { HeadlineSkeleton, HeroCardSkeleton, ProductRailSkeleton } from "@/components/common/Skeletons";
 import { useTabBarHeight } from "@/components/common/CustomTabBar";
 import { MenuButton } from "@/components/common/TabHeading";
 import { NextMatchCard } from "@/components/match/NextMatchCard";
@@ -12,10 +13,11 @@ import { NewsCarousel } from "@/components/home/NewsCarousel";
 import { NewsRow } from "@/components/home/NewsRow";
 import { ShortcutGrid, type Shortcut } from "@/components/home/ShortcutGrid";
 import { FanPostCard } from "@/components/fan/FanPostCard";
-import { ProductCard } from "@/components/store/ProductCard";
+import { ProductRail } from "@/components/store/ProductCard";
 import { useFanPosts, useFeaturedProducts, useMatches, useNews } from "@/hooks/queries";
 import { IMAGES } from "@/mocks/images";
-import { useLiveMatch } from "@/stores/liveMatchStore";
+import { useLiveStatus } from "@/stores/liveMatchStore";
+import type { NewsItem, Product } from "@/types";
 import { useSessionStore } from "@/stores/sessionStore";
 import { spacing, useTheme } from "@/theme";
 
@@ -26,6 +28,10 @@ const WALL_PREVIEW_COUNT = 2;
 /** Ana sayfadaki mağaza rafında ürün kartının eni */
 const STORE_RAIL_CARD = 150;
 
+// Sabit işleyiciler: her çizimde yeni fonksiyon üretilmez, `memo`'lu kartlar boşuna yeniden çizilmez
+const openProduct = (product: Product) => router.push(`/store/${product.id}`);
+const openNews = (item: NewsItem) => router.push(`/news/${item.id}`);
+
 /**
  * Ana Sayfa (prototip ekran 2). Sıra Ar-Ge belgesi 8.1'deki 4. referanstan: selamlama, sıradaki maç,
  * manşet, kısayollar, anıt duvarı, taraftar duvarı, son haberler. Veriler servis katmanından gelir.
@@ -34,7 +40,8 @@ export default function HomeTab() {
   const tabBarHeight = useTabBarHeight();
   const { isDark } = useTheme();
   const fan = useSessionStore((s) => s.fan);
-  const live = useLiveMatch();
+  // Yalnız maçın durumu: dakika ilerlerken ana sayfanın tamamı (650 ms'de bir) yeniden çizilmez
+  const isLiveNow = useLiveStatus() === "live";
   const { data: matches } = useMatches();
   const { data: news } = useNews();
   const { data: posts } = useFanPosts();
@@ -42,7 +49,6 @@ export default function HomeTab() {
 
   // Sıradaki maç: oynanmamış ilk maç
   const nextMatch = matches?.find((m) => m.status === "scheduled");
-  const isLiveNow = live.status === "live";
   const firstName = fan?.is_guest ? null : fan?.full_name.split(" ")[0];
 
   const shortcuts = useMemo<Shortcut[]>(
@@ -80,9 +86,28 @@ export default function HomeTab() {
           </AppText>
         </View>
 
-        <View style={{ paddingHorizontal: spacing.screen }}>
-          {nextMatch ? <NextMatchCard match={nextMatch} onPress={() => router.push(`/match/${nextMatch.id}`)} /> : <ListRowSkeleton count={2} />}
-        </View>
+        {/* İlk açılışta üstteki dört bölüm sırayla, hafifçe aşağıdan solarak belirir; ekranın altındakiler animasyonsuzdur */}
+        <Reveal index={0} style={{ paddingHorizontal: spacing.screen }}>
+          {nextMatch ? <NextMatchCard match={nextMatch} onPress={() => router.push(`/match/${nextMatch.id}`)} /> : <HeroCardSkeleton height={300} />}
+        </Reveal>
+
+        {/* Maç günü rehberi ve bilet: maç başlamadan önce (canlı maçta yerini Tribün Modu alır) */}
+        {nextMatch && !isLiveNow ? (
+          <View style={{ flexDirection: "row", gap: spacing.boxGap, paddingHorizontal: spacing.screen, marginTop: spacing.boxGap }}>
+            <Surface onPress={() => router.push("/matchday")} style={{ flex: 1 }}>
+              <ColorIconBox name="checkin" size={40} />
+              <AppText variant="small" weight="medium" style={{ flex: 1 }}>
+                Maç günü rehberi
+              </AppText>
+            </Surface>
+            <Surface onPress={() => router.push("/tickets")} style={{ flex: 1 }}>
+              <ColorIconBox name="ticket" size={40} />
+              <AppText variant="small" weight="medium" style={{ flex: 1 }}>
+                Bilet al
+              </AppText>
+            </Surface>
+          </View>
+        ) : null}
 
         {/* Tribün Modu kartı: yalnız maç oynanırken (belgedeki "yalnız maç günü" kuralı; prototipte kısayollardan da açılır) */}
         {isLiveNow ? (
@@ -101,24 +126,20 @@ export default function HomeTab() {
           </View>
         ) : null}
 
-        <View style={{ marginTop: spacing.section }}>
+        <Reveal index={1} style={{ marginTop: spacing.section }}>
           <SectionHeader title="Manşet" />
-          {news ? <NewsCarousel items={news.slice(0, HEADLINE_COUNT)} onOpen={(item) => router.push(`/news/${item.id}`)} /> : null}
-        </View>
+          {news ? <NewsCarousel items={news.slice(0, HEADLINE_COUNT)} onOpen={openNews} /> : <HeadlineSkeleton />}
+        </Reveal>
 
-        <View style={{ marginTop: spacing.section }}>
+        <Reveal index={2} style={{ marginTop: spacing.section }}>
           <ShortcutGrid items={shortcuts} />
-        </View>
+        </Reveal>
 
         {/* Mağaza rafı: yeni sezon formaları */}
-        <View style={{ marginTop: spacing.section }}>
+        <Reveal index={3} style={{ marginTop: spacing.section }}>
           <SectionHeader title="Mağaza" subtitle="Yeni sezon formaları" onAction={() => router.push("/store")} />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: spacing.screen, gap: 12 }}>
-            {(featured ?? []).map((product) => (
-              <ProductCard key={product.id} product={product} width={STORE_RAIL_CARD} onPress={(p) => router.push(`/store/${p.id}`)} />
-            ))}
-          </ScrollView>
-        </View>
+          {featured ? <ProductRail products={featured} cardWidth={STORE_RAIL_CARD} onPress={openProduct} /> : <ProductRailSkeleton cardWidth={STORE_RAIL_CARD} />}
+        </Reveal>
 
         <View style={{ paddingHorizontal: spacing.screen, marginTop: spacing.section }}>
           <Surface row={false} padding={16}>

@@ -11,7 +11,7 @@ export default function NewsPage() {
   return (
     <>
       <PageHero title="Haberler" text="Kulüpten son gelişmeler ve maç sonuçları." />
-      <Container className="mt-10 space-y-4">
+      <Container className="reveal mt-10 space-y-4">
         <NewsCard item={first} large />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {rest.map((item) => (

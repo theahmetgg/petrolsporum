@@ -104,6 +104,61 @@ body {
   border-radius: 6px;
 }
 
+/* ── Hareket (karar, 19 Kasım 2026) ─────────────────────────────────────────────────────────────────
+   Kurallar: yalnız saydamlık ve konum / ölçek değişir (yerleşim yeniden hesaplanmaz), süreler 200-400 ms,
+   hiçbiri JavaScript çalıştırmaz (tarayıcının kendi çizim hattında oynar). "Hareketi azalt" açıksa hepsi kapanır. */
+
+/* Kaydırınca beliriş: bölüm ekrana girerken 18 px aşağıdan solarak gelir. Kaydırmaya bağlı animasyonu
+   desteklemeyen tarayıcıda (ör. Firefox) bölüm hiç animasyonsuz, olduğu gibi görünür. Sayfa açılırken zaten
+   ekranda olan bölümler oynamaz. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 28%;
+    }
+  }
+}
+
+/* Vitrindeki forma: 6 saniyede bir, 8 px yukarı aşağı çok yavaş süzülür (tek öğe, yalnız konum) */
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .float-soft {
+    animation: float-soft 6s ease-in-out infinite;
+  }
+}
+
+/* Sayfa geçişi (React ViewTransition + tarayıcının View Transitions özelliği): sayfa içeriği kısa bir çapraz
+   solmayla değişir; mağaza kartındaki ürün, ürün sayfasındaki büyük fotoğrafa büyüyerek taşınır (`morph` sınıfı).
+   Desteklemeyen tarayıcıda sayfa her zamanki gibi anında değişir. */
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 220ms;
+}
+::view-transition-group(.morph) {
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -111,5 +166,10 @@ body {
   * {
     animation: none !important;
     transition: none !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

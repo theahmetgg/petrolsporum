@@ -26,6 +26,7 @@ const FILES = [
   "mocks/standings.ts",
   "mocks/players.ts",
   "mocks/matches.ts",
+  "mocks/matchday.ts",
   "mocks/news.ts",
   "mocks/club.ts",
   "mocks/store.ts",

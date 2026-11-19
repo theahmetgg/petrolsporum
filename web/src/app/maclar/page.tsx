@@ -48,7 +48,7 @@ export default function MatchesPage() {
   return (
     <>
       <PageHero title="Maçlar" text="Trendyol 1. Lig 2026-27 sezonu: 38 haftalık fikstür, sonuçlar ve puan durumu." />
-      <Container className="mt-10 grid gap-12 lg:grid-cols-[1.1fr_1fr]">
+      <Container className="reveal mt-10 grid gap-12 lg:grid-cols-[1.1fr_1fr]">
         <div className="min-w-0 space-y-12">
           <section aria-labelledby="yaklasan">
             <h2 id="yaklasan" className="heading mb-5 text-3xl md:text-4xl">

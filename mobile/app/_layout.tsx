@@ -1,3 +1,4 @@
+import { useMatchAlertStore } from "@/stores/matchAlertStore";
 import "../global.css";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
@@ -61,6 +62,7 @@ function RootLayout() {
     usePredictionStore.getState().hydrate().catch(console.warn);
     useLineupStore.getState().hydrate().catch(console.warn);
     useBrickStore.getState().hydrate().catch(console.warn);
+    useMatchAlertStore.getState().hydrate().catch(console.warn);
   }, []);
 
   const [fontsLoaded] = useAppFonts();
